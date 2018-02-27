@@ -1,0 +1,11 @@
+export * from './answer.service';
+import { AnswerService } from './answer.service';
+export * from './lecture.service';
+import { LectureService } from './lecture.service';
+export * from './mood.service';
+import { MoodService } from './mood.service';
+export * from './question.service';
+import { QuestionService } from './question.service';
+export * from './student.service';
+import { StudentService } from './student.service';
+export const APIS = [AnswerService, LectureService, MoodService, QuestionService, StudentService];

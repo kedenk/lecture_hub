@@ -1,0 +1,7 @@
+
+.chatmessage {
+    display: inline-block;
+    word-break: break-all;
+    max-width: 80%;
+    margin-bottom: 5px;
+}

@@ -1,0 +1,64 @@
+
+<div class="main-content">
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-md-12">
+
+                <div class="card">
+                    <ngx-loading [show]="lecturesLoading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+                    <div class="header">
+                        <h4 class="title">Lectures</h4>
+                        <p class="category">All lectures</p>
+                    </div>
+                    <div class="content">
+                        <div *ngIf="lectures.length > 0" class="table-full-width">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Lecture</th>
+                                        <th>Something</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let lecture of lectures" (click)="lectureSelected(lecture)">
+                                    <td class="col-md-1">
+                                        {{lecture.lectureid}}
+                                    </td>
+                                    <td class="col-md-4">
+                                        {{lecture.lecturename}}
+                                    </td>
+                                    <td class="col-md-7">
+                                        {{lecture.lecturedescription}}
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div *ngIf="lectures.length == 0">
+                            <h4>Sorry, we found no lectures!</h4>
+                            <button type="button" class="btn btn-default btn-block" value="Refresh" (click)="refreshLectures()">Refresh</button>
+                        </div>
+
+                        <div class="footer">
+                            <hr>
+                            <div *ngIf="lastUpdate" class="stats">
+                                <i class="fa fa-history"></i> Updated {{lastUpdate | date:'dd.MM.yyyy HH:mm:ss' }} - <a (click)="refreshLectures()">Refresh</a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>

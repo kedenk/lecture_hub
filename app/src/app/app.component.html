@@ -1,0 +1,55 @@
+<div class="wrapper">
+    <div class="sidebar" data-color="red" data-image="">
+        <app-sidebar></app-sidebar>
+        <div class="sidebar-background" style="background-image: url(/assets/img/sidebar-5.jpg)"></div>
+    </div>
+
+    <div class="main-panel">
+        <navbar-cmp></navbar-cmp>
+        <div *ngIf="!loggedin">
+
+            <div class="main-content">
+
+                <div class="container-fluid">
+                    <!-- Common Lecture informations -->
+                    <div class="row">
+
+                        <div class="card col-md-4 col-md-offset-4 text-center">
+                            <div class="header">
+                                <h4 class="title">Login</h4>
+                            </div>
+
+                            <div class="content ">
+
+                                <form class="form-inline " [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
+
+                                    <br/>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" formControlName="username" autocomplete="off" placeholder="Username" required />
+                                        <button type="submit" class="btn btn-primary"><strong>Login</strong></button>
+
+                                        <br/>
+                                        <br/>
+                                        <div *ngIf="loginErrorMessage" class="alert alert-danger" role="alert">
+                                            <p ><strong>{{loginErrorMessage}}</strong></p>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="loggedin">
+
+            <router-outlet></router-outlet>
+            <div *ngIf="isMap('maps')">
+                <footer-cmp></footer-cmp>
+            </div>
+
+        </div>
+    </div>
+</div>

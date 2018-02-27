@@ -1,0 +1,118 @@
+
+<div class="main-content">
+
+    <div class="container-fluid">
+        <!-- Common Lecture informations -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">{{lecture.lecturename}}</h4>
+                        <p class="category">{{lecture.lecturedescription}}</p>
+                    </div>
+                    <div class="content"></div>
+                </div>
+            </div>
+
+            <!-- mood of the course -->
+            <div class="col-md-4">
+                <ngx-loading [show]="moodIsLoading" ></ngx-loading>
+
+                <!--
+                // I like this chart but I have to use smileys
+
+                <lbd-chart
+                        *ngIf="mood; else noMoodAvailable"
+                        [title]="'Course Mood'"
+                        [chartClass]="'ct-perfect-fourth'"
+                        [chartType]="moodChartType"
+                        [chartData]="moodChartData"
+                        [legendItems]="moodChartLegendItems"
+                        [withHr]="true"
+                        [footerIconClass]="'fa fa-clock-o'"
+                        [footerText]="moodLastUpdateMessage">
+                </lbd-chart>
+
+                <ng-template #noMoodAvailable>
+                    <div class="card">
+                        <div class="header">
+                            <h5 class="title">Course Mood</h5>
+                        </div>
+                        <div class="content">
+                            {{ moodErrorMessage }}
+                        </div>
+                    </div>
+                </ng-template>
+
+                -->
+
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Course Mood</h4>
+                    </div>
+
+                    <div class="content">
+
+                        <img src="/assets/img/positive_smiley.png" class="img-fluid" style="width: 15%">
+
+
+                        <img src="/assets/img/neutral_smiley.png" class="img-fluid" style="width: 15%">
+
+
+                        <img src="/assets/img/negative_smiley.png" class="img-fluid" style="width: 15%">
+
+                        <br/>
+                        <p>Positive: {{mood.positive}}  Neutral: {{mood.neutral}}  Negative: {{mood.negative}}</p>
+                        <hr/>
+                        <div class="stats">
+                            <i [ngClass]="footerIconClass"></i> {{ moodLastUpdateMessage }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <!-- Div for the chat -->
+            <div class="col-md-6 chat-container">
+                <app-chat [(lecture)]="lecture"></app-chat>
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="header">
+                        <h5 class="title">Live Stream</h5>
+                    </div>
+
+                    <div class="content">
+                        <a target="_blank" href="/assets/img/video-thumbnail.jpg">
+                            <img src="/assets/img/video-thumbnail.jpg" class="img-thumbnail" alt="Live Stream">
+                        </a>
+                        <br/>
+                        <p>Currently no live stream available...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Div for the question answer section -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Question - Answer - Section</h4>
+                        <p class="category"></p>
+                    </div>
+
+                    <div class="content">
+                        Question Answer section
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
