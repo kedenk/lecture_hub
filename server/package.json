@@ -1,0 +1,43 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node index.js",
+    "dev": "watch 'npm run start' src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kedenk/lecture_dashboard.git"
+  },
+  "keywords": [
+    "node.js",
+    "server",
+    "backend",
+    "lecture",
+    "dashboard",
+    "rest",
+    "api"
+  ],
+  "author": "Kevin Denk <denk.kevin@web.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kedenk/lecture_dashboard/issues"
+  },
+  "homepage": "https://github.com/kedenk/lecture_dashboard#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "http-status-codes": "^1.3.0",
+    "log4js": "^2.5.2",
+    "pg": "^7.4.1",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "watch": "^1.0.2"
+  }
+}

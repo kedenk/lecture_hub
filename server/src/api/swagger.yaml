@@ -1,0 +1,860 @@
+---
+swagger: "2.0"
+info:
+  description: "WebDev Practical Project Server API"
+  version: "1.0.0"
+  title: "WebDev Practical Project Server API"
+  termsOfService: ""
+  contact:
+    email: "maximilian.altmeyer@dfki.de"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:5300"
+basePath: "/"
+tags:
+- name: "student"
+  description: "The student entity stores a username, a unique token and the mood\
+    \ of a student"
+- name: "lecture"
+  description: "Lectures have a name and a description"
+- name: "question"
+  description: "Questions hold a corresponding lecture, have an author and a textContent"
+- name: "answer"
+  description: "Answers have an author, a textContent and are linked to a question\
+    \ (answerTo)"
+schemes:
+- "http"
+paths:
+  /mood:
+    get:
+      tags:
+      - "mood"
+      summary: "Returns the moods over all lectures"
+      operationId: "getMood"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Returns object"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Mood"
+      x-swagger-router-controller: "Mood"
+  /mood/byLecture/{lectureID}:
+    get:
+      tags:
+      - "mood"
+      summary: "Returns the moods for a lecture"
+      operationId: "getMoodByLectureID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "lectureID"
+        in: "path"
+        description: "lectureID of corresponding lecture"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns object"
+          schema:
+            $ref: "#/definitions/Mood"
+        404:
+          description: "Lecture not found"
+      x-swagger-router-controller: "Mood"
+    post:
+      tags:
+      - "mood"
+      summary: "Update/Post an existing student's mood for a given lecture"
+      operationId: "postMoodForLecture"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "lectureID"
+        in: "path"
+        description: "lectureID of corresponding lecture"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "The new mood for the lecture and the studentID "
+        required: true
+        schema:
+          $ref: "#/definitions/body"
+      responses:
+        200:
+          description: "Returns object"
+          schema:
+            $ref: "#/definitions/Mood"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Lecture not found"
+      x-swagger-router-controller: "Mood"
+  /mood/byLecture/{lectureID}/byStudent/{studentID}:
+    get:
+      tags:
+      - "mood"
+      summary: "Get student's mood for a lecture"
+      description: "Return a student's current mood for a lecture. If there is no\
+        \ mood set, the neutral one is returned"
+      operationId: "getMoodForStudentByLecture"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "lectureID"
+        in: "path"
+        description: "lectureID of corresponding lecture"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "studentID"
+        in: "path"
+        description: "studentID of the corresponding student"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns object"
+          schema:
+            $ref: "#/definitions/inline_response_200"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Lecture not found"
+      x-swagger-router-controller: "Mood"
+  /student:
+    get:
+      tags:
+      - "student"
+      summary: "Returns all students in the system"
+      operationId: "getStudents"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Returns objects"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Student"
+      x-swagger-router-controller: "Student"
+    post:
+      tags:
+      - "student"
+      summary: "Add a new student"
+      description: ""
+      operationId: "addStudent"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "student"
+        description: "Student object that shall be added"
+        required: true
+        schema:
+          $ref: "#/definitions/student"
+      responses:
+        200:
+          description: "Returns the created object"
+          schema:
+            $ref: "#/definitions/Student"
+        405:
+          description: "Invalid input"
+      x-swagger-router-controller: "Student"
+  /student/{studentID}:
+    get:
+      tags:
+      - "student"
+      summary: "Find student by studentID"
+      description: "Returns a single student"
+      operationId: "getStudentByStudentID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "studentID"
+        in: "path"
+        description: "studentID of user to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns object"
+          schema:
+            $ref: "#/definitions/Student"
+        404:
+          description: "Student not found"
+      x-swagger-router-controller: "Student"
+  /lecture:
+    get:
+      tags:
+      - "lecture"
+      summary: "Returns all lectures in the system"
+      operationId: "getLectures"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Returns objects"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Lecture"
+      x-swagger-router-controller: "Lecture"
+  /question:
+    get:
+      tags:
+      - "question"
+      summary: "Returns all questions in the system"
+      operationId: "getQuestions"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "studentID"
+        in: "query"
+        description: "studentID of the student that requests the questions"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns objects"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Question"
+        403:
+          description: "Invalid studentID"
+      x-swagger-router-controller: "Question"
+  /question/{questionID}:
+    get:
+      tags:
+      - "question"
+      summary: "Find question by questionID"
+      description: "Returns question for a questionID"
+      operationId: "getQuestionsByQuestionID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "questionID"
+        in: "path"
+        description: "questionID of corresponding question"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "studentID"
+        in: "query"
+        description: "studentID of the student that requests the questions"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns object"
+          schema:
+            $ref: "#/definitions/Question"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Question not found"
+      x-swagger-router-controller: "Question"
+    put:
+      tags:
+      - "question"
+      summary: "Update a question"
+      description: ""
+      operationId: "updateQuestion"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "questionID"
+        in: "path"
+        description: "questionID of corresponding question"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "The new textContent of the question and the studentID to check\
+          \ if it matches the author of the question"
+        required: true
+        schema:
+          $ref: "#/definitions/body_1"
+      responses:
+        200:
+          description: "Returns the updated object"
+          schema:
+            $ref: "#/definitions/Question"
+        403:
+          description: "studentID does not match author of the question"
+        404:
+          description: "Question not found"
+        405:
+          description: "Invalid input"
+      x-swagger-router-controller: "Question"
+  /question/vote/{questionID}:
+    post:
+      tags:
+      - "question"
+      summary: "Vote for a question. NOTE that voting is only possible once per user\
+        \ and question/answer!"
+      description: ""
+      operationId: "voteQuestion"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "questionID"
+        in: "path"
+        description: "questionID of corresponding question"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "The vote (-1 or 1) for a . NOTE that voting is only possible\
+          \ once per user and question/answer!"
+        required: true
+        schema:
+          $ref: "#/definitions/body_2"
+      responses:
+        200:
+          description: "Returns the updated question object"
+          schema:
+            $ref: "#/definitions/Question"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Question not found"
+        405:
+          description: "Invalid input/Already voted"
+      x-swagger-router-controller: "Question"
+  /question/byLecture/{lectureID}:
+    get:
+      tags:
+      - "question"
+      summary: "Find questions by lectureID"
+      description: "Returns all questions for a lecture"
+      operationId: "getQuestionsByLectureID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "lectureID"
+        in: "path"
+        description: "lectureID of corresponding lecture"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "studentID"
+        in: "query"
+        description: "studentID of the student that requests the questions"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns objects"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Question"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Lecture not found"
+      x-swagger-router-controller: "Question"
+    post:
+      tags:
+      - "question"
+      summary: "Add a new question in a given lecture"
+      description: ""
+      operationId: "addQuestion"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "lectureID"
+        in: "path"
+        description: "lectureID of the lecture in which the question should be posted"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "The textContent of the new question and the author (studentID)\
+          \ of the question"
+        required: true
+        schema:
+          $ref: "#/definitions/body_3"
+      responses:
+        200:
+          description: "Returns the created object"
+          schema:
+            $ref: "#/definitions/Question"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Lecture not found"
+        405:
+          description: "Invalid input"
+      x-swagger-router-controller: "Question"
+  /answer:
+    get:
+      tags:
+      - "answer"
+      summary: "Returns all answers in the system"
+      operationId: "getAnswers"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "studentID"
+        in: "query"
+        description: "studentID of the student that requests the answers"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns objects"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Answer"
+        403:
+          description: "Invalid studentID"
+      x-swagger-router-controller: "Answer"
+  /answer/{answerID}:
+    get:
+      tags:
+      - "answer"
+      summary: "Find answer by answerID"
+      description: "Returns answer for a answerID"
+      operationId: "getAnswersByAnswerID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "answerID"
+        in: "path"
+        description: "answerID of corresponding answer"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "studentID"
+        in: "query"
+        description: "studentID of the student that requests the answers"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns object"
+          schema:
+            $ref: "#/definitions/Answer"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Answer not found"
+      x-swagger-router-controller: "Answer"
+    put:
+      tags:
+      - "answer"
+      summary: "Update an answer"
+      description: ""
+      operationId: "updateAnswer"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "answerID"
+        in: "path"
+        description: "answerID of corresponding answer"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "The new textContent of the answer and the studentID to check\
+          \ if it matches the author of the answer"
+        required: true
+        schema:
+          $ref: "#/definitions/body_4"
+      responses:
+        200:
+          description: "Returns the updated object"
+          schema:
+            $ref: "#/definitions/Answer"
+        403:
+          description: "studentID does not match author of the answer"
+        404:
+          description: "Answer not found"
+        405:
+          description: "Invalid input"
+      x-swagger-router-controller: "Answer"
+  /answer/vote/{answerID}:
+    post:
+      tags:
+      - "answer"
+      summary: "Vote for an answer. NOTE that voting is only possible once per user\
+        \ and question/answer!"
+      description: ""
+      operationId: "voteAnswer"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "answerID"
+        in: "path"
+        description: "answerID of corresponding answer"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "The vote (-1 or 1) for a . NOTE that voting is only possible\
+          \ once per user and question/answer!"
+        required: true
+        schema:
+          $ref: "#/definitions/body_5"
+      responses:
+        200:
+          description: "Returns the updated object"
+          schema:
+            $ref: "#/definitions/Answer"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Answer not found"
+        405:
+          description: "Invalid input/Already voted"
+      x-swagger-router-controller: "Answer"
+  /answer/byLecture/{lectureID}:
+    get:
+      tags:
+      - "answer"
+      summary: "Find answers by lectureID"
+      description: "Returns all answers for a lecture"
+      operationId: "getAnswersByLectureID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "lectureID"
+        in: "path"
+        description: "lectureID of corresponding lecture"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "studentID"
+        in: "query"
+        description: "studentID of the student that requests the answers"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns objects"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Answer"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Answers not found"
+      x-swagger-router-controller: "Answer"
+  /answer/byQuestion/{questionID}:
+    get:
+      tags:
+      - "answer"
+      summary: "Find answers by questionID"
+      description: "Returns all answers for a question"
+      operationId: "getAnswersByQuestionID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "questionID"
+        in: "path"
+        description: "questionID of corresponding question"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "studentID"
+        in: "query"
+        description: "studentID of the student that requests the answers"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "Returns objects"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Answer"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Answers not found"
+      x-swagger-router-controller: "Answer"
+    post:
+      tags:
+      - "answer"
+      summary: "Add a new answer for a given question"
+      description: ""
+      operationId: "addAnswer"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "questionID"
+        in: "path"
+        description: "questionID of the question in which the answer should be posted"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "The textContent of the new answer and the author (studentID)\
+          \ of the answer"
+        required: true
+        schema:
+          $ref: "#/definitions/body_6"
+      responses:
+        200:
+          description: "Returns the created object"
+          schema:
+            $ref: "#/definitions/Answer"
+        403:
+          description: "Invalid studentID"
+        404:
+          description: "Question not found"
+        405:
+          description: "Invalid input"
+      x-swagger-router-controller: "Answer"
+definitions:
+  Student:
+    type: "object"
+    properties:
+      studentID:
+        type: "integer"
+        format: "int64"
+        description: "studentID as generated by the database system"
+      username:
+        type: "string"
+        description: "Username as defined by the user"
+    example:
+      studentID: 0
+      username: "username"
+  Lecture:
+    type: "object"
+    properties:
+      lectureID:
+        type: "integer"
+        format: "int64"
+        description: "lectureID as generated by the database system"
+      lectureName:
+        type: "string"
+        description: "Name of the lecture"
+      lectureDescription:
+        type: "string"
+        description: "Description of the lecture"
+    example:
+      lectureName: "lectureName"
+      lectureDescription: "lectureDescription"
+      lectureID: 0
+  Question:
+    type: "object"
+    properties:
+      questionID:
+        type: "integer"
+        format: "int64"
+        description: "questionID as generated by the database system"
+      lecture:
+        $ref: "#/definitions/Lecture"
+      author:
+        $ref: "#/definitions/Student"
+      textContent:
+        type: "string"
+        description: "The question itself"
+      voteRatio:
+        type: "integer"
+        format: "int32"
+        description: "Number of all upvotes for this question subtracted by the number\
+          \ of downvotes"
+      studentVote:
+        type: "integer"
+        format: "int32"
+        description: "The vote that was performed by the student for which studentID\
+          \ was given (either 0,1,-1)"
+    example:
+      studentVote: 1
+      questionID: 0
+      author:
+        studentID: 0
+        username: "username"
+      lecture:
+        lectureName: "lectureName"
+        lectureDescription: "lectureDescription"
+        lectureID: 0
+      textContent: "textContent"
+      voteRatio: 6
+  Answer:
+    type: "object"
+    properties:
+      answerID:
+        type: "integer"
+        format: "int64"
+        description: "answerID as generated by the database system"
+      author:
+        $ref: "#/definitions/Student"
+      answerTo:
+        type: "integer"
+        description: "The answer itself"
+      textContent:
+        type: "string"
+        description: "The answer itself"
+      voteRatio:
+        type: "integer"
+        format: "int32"
+        description: "Number of all upvotes for this answer subtracted by the number\
+          \ of downvotes"
+      studentVote:
+        type: "integer"
+        format: "int32"
+        description: "The vote that was performed by the student for which studentID\
+          \ was given (either 0,1,-1)"
+    example:
+      answerID: 0
+      answerTo: 6
+      studentVote: 5
+      author:
+        studentID: 0
+        username: "username"
+      textContent: "textContent"
+      voteRatio: 1
+  Mood:
+    type: "object"
+    properties:
+      lectureID:
+        type: "integer"
+        format: "int64"
+        description: "lectureID of the corresponding lecture"
+      positive:
+        type: "integer"
+        format: "int64"
+        description: "number of positive (1) mood votings"
+      negative:
+        type: "integer"
+        format: "int64"
+        description: "number of negative (-1) mood votings"
+      neutral:
+        type: "integer"
+        format: "int64"
+        description: "number of neutral (0) mood votings"
+    example:
+      negative: 1
+      neutral: 5
+      positive: 6
+      lectureID: 0
+  body:
+    type: "object"
+    required:
+    - "mood"
+    - "studentID"
+    properties:
+      mood:
+        type: "integer"
+      studentID:
+        type: "integer"
+  inline_response_200:
+    required:
+    - "mood"
+    properties:
+      mood:
+        type: "integer"
+    example:
+      mood: 0
+  student:
+    type: "object"
+    required:
+    - "username"
+    properties:
+      username:
+        type: "string"
+  body_1:
+    type: "object"
+    required:
+    - "studentID"
+    - "textContent"
+    properties:
+      textContent:
+        type: "string"
+      studentID:
+        type: "integer"
+  body_2:
+    type: "object"
+    required:
+    - "studentID"
+    - "vote"
+    properties:
+      vote:
+        type: "integer"
+      studentID:
+        type: "integer"
+  body_3:
+    type: "object"
+    required:
+    - "studentID"
+    - "textContent"
+    properties:
+      textContent:
+        type: "string"
+      studentID:
+        type: "integer"
+  body_4:
+    type: "object"
+    required:
+    - "studentID"
+    - "textContent"
+    properties:
+      textContent:
+        type: "string"
+      studentID:
+        type: "integer"
+  body_5:
+    type: "object"
+    required:
+    - "studentID"
+    - "vote"
+    properties:
+      vote:
+        type: "integer"
+      studentID:
+        type: "integer"
+  body_6:
+    type: "object"
+    required:
+    - "studentID"
+    - "textContent"
+    properties:
+      textContent:
+        type: "string"
+      studentID:
+        type: "integer"
