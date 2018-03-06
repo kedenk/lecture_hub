@@ -33,6 +33,8 @@ import {LectureService, QuestionService, MoodService, AnswerService, StudentServ
 import {LectureComponent} from "./lecture/lecture.component";
 import {ChatMessageComponent} from "./chat/chatmessage.component";
 import {DatePipe} from "@angular/common";
+import {TextpreviewPipe} from "./pipes/textpreview.pipe";
+import {QuestionpreviewComponent} from "./lecture/questionpreview.component";
 
 
 
@@ -49,8 +51,12 @@ import {DatePipe} from "@angular/common";
     UpgradeComponent,
     ChatComponent,
     ChatMessageComponent,
-    LectureComponent
+    LectureComponent,
+    QuestionpreviewComponent,
 
+
+    // Pips
+    TextpreviewPipe
   ],
   imports: [
     BrowserModule,

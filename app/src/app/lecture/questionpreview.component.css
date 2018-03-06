@@ -1,0 +1,23 @@
+
+.rateDiv {
+    top: 50%;
+}
+
+.glyphicon-large {
+    font-size: 2em;
+}
+
+.glyphicon-vote {
+    cursor: pointer;
+    bottom: 0px;
+    top: 0px;
+}
+
+.voteRatioLabel {
+    font-size: 2em;
+    margin: 0px;
+}
+
+.voted {
+    color: red;
+}

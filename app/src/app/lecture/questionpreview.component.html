@@ -1,0 +1,45 @@
+
+<ngx-loading [show]="isQuestionLoading"></ngx-loading>
+
+<div class="row" *ngFor="let question of questions">
+    <!-- Div for rating -->
+    <div class="col-md-1 text-center rateDiv">
+        <ngx-loading [show]="isVotingLoading"></ngx-loading>
+        <span class="glyphicon glyphicon-chevron-up glyphicon-large glyphicon-vote" (click)="onUpvote()" [ngClass]="{voted: question.studentVote == 1}"></span>
+        <strong><p class="voteRatioLabel" *ngIf="question.voteRatio">{{question.voteRatio}}</p></strong>
+        <strong><p class="voteRatioLabel" *ngIf="!question.voteRatio">0</p></strong>
+        <span class="glyphicon glyphicon-chevron-down glyphicon-large glyphicon-vote" (click)="onDownvote()" [ngClass]="{voted: question.studentVote == -1}"></span>
+    </div>
+
+
+    <div class="col-md-11">
+        <div class="card">
+            <div class="header">
+                <h5 class="title"><strong>{{question.author.username}}</strong> asked:</h5>
+            </div>
+
+            <!-- Question text content with hottest answers -->
+            <div class="content">
+                {{question.textContent}}
+                <!-- <pre>{{question | json}}</pre> -->
+
+                <br/>
+                <br/>
+                <hr/>
+
+                <!-- some answers for this question -->
+                <div class="card">
+                    <div class="content">
+                        This is the hottest answer.
+                        <hr/>
+                        <div class="stats">
+                            Written by <strong>USERNAME</strong> -- <a>Jump to answer</a>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary">Show all Answers</button>
+                <button type="button" class="btn btn-success">Answer Question</button>
+            </div>
+        </div>
+    </div>
+</div>

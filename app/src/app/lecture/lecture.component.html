@@ -62,7 +62,8 @@
                         <img src="/assets/img/negative_smiley.png" class="img-fluid" style="width: 15%">
 
                         <br/>
-                        <p>Positive: {{mood.positive}}  Neutral: {{mood.neutral}}  Negative: {{mood.negative}}</p>
+                        <p *ngIf="mood">Positive: {{mood.positive}}  Neutral: {{mood.neutral}}  Negative: {{mood.negative}}</p>
+                        <p *ngIf="!mood">Positive: --  Neutral: --  Negative: --</p>
                         <hr/>
                         <div class="stats">
                             <i [ngClass]="footerIconClass"></i> {{ moodLastUpdateMessage }}
@@ -104,11 +105,12 @@
                 <div class="card">
                     <div class="header">
                         <h4 class="title">Question - Answer - Section</h4>
-                        <p class="category"></p>
+                        <p class="category">Here you can ask questions related to this course. The questions are ordered by their rating.
+                            The hottest ones are the first. </p>
                     </div>
 
                     <div class="content">
-                        Question Answer section
+                        <app-questionpreview [lectureId]="lecture.lectureid"></app-questionpreview>
                     </div>
                 </div>
             </div>
