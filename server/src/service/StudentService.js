@@ -3,6 +3,8 @@
 var dbPool = require('../db/DbManager');
 var logger = require('../utils/LogFactory').getLogger();
 
+var Student = require('../models/student');
+
 /**
  * Add a new student
  * 
@@ -18,10 +20,9 @@ exports.addStudent = function(student) {
           .then( res => {
               if( res.rowCount > 0 ) {
 
-                  reject('Username is not free. Select another one.');
+                  resolve(res.rows[0]);
 
               } else {
-
 
                   // insert new username
                   const insertQuery = 'INSERT INTO student (username) VALUES ($1) RETURNING studentid, username';
@@ -37,7 +38,7 @@ exports.addStudent = function(student) {
                           } else {
 
                               if( result.rowCount > 0 ) {
-                                  resolve(result.rows[0]);
+                                  resolve(buildStudent( result.rows[0] ));
                               } else {
                                   resolve(undefined);
                               }
@@ -64,10 +65,11 @@ exports.getStudentByStudentID = function(studentID) {
 
       dbPool.selectByKey( 'student', 'studentid', studentID)
           .then( res => {
-              if ( res.rowCount === 0 ) {
-                  reject('Student not found');
+
+              if( res.rowCount > 0 ) {
+                  resolve(buildStudent( res.rows[0] ));
               } else {
-                  resolve(res.rows);
+                  reject('Invalid studentID');
               }
           })
           .catch(err => {
@@ -87,7 +89,12 @@ exports.getStudents = function() {
 
     dbPool.selectAll('student')
         .then( res => {
-            resolve(res.rows);
+
+            var result = [];
+            res.rows.forEach( function (item) {
+                result.push( buildStudent(item) );
+            });
+            resolve(result);
         })
         .catch(err => {
             reject(err);
@@ -95,3 +102,7 @@ exports.getStudents = function() {
   });
 }
 
+
+function buildStudent( row ) {
+    return new Student(row.studentid, row.username);
+}

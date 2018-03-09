@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kedenk/lecture_dashboard.git"
+    "url": "git+https://github.com/kedenk/lecture_hub.git"
   },
   "keywords": [
     "node.js",
@@ -25,9 +25,9 @@
   "author": "Kevin Denk <denk.kevin@web.de>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kedenk/lecture_dashboard/issues"
+    "url": "https://github.com/kedenk/lecture_hub/issues"
   },
-  "homepage": "https://github.com/kedenk/lecture_dashboard#readme",
+  "homepage": "https://github.com/kedenk/lecture_hub#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
