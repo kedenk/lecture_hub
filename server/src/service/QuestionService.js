@@ -82,12 +82,11 @@ exports.getQuestions = function(studentID) {
     pool.query(query,
         (err, cursor) => {
             if( err ) {
-                console.log("error");
-                console.log(err);
+
                 reject(err);
 
             } else {
-                console.log(cursor.rows);
+
                 var result = [];
                 for( var i = 0; i < cursor.rowCount; i++ ) {
 
@@ -208,11 +207,6 @@ function doGetQuestionByQuestionID(questionID, studentID) {
  **/
 exports.updateQuestion = function(questionID, body) {
   return new Promise(function(resolve, reject) {
-
-      doGetQuestionByQuestionID( questionID, body.studentID )
-          .then(function(resp) {
-
-          })
 
     const query = [ 'UPDATE', tableName, 'SET textcontent = $2 WHERE questionid = $1'].join(' ');
     const pool = dbPool.getDbPool();

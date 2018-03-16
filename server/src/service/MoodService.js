@@ -3,6 +3,7 @@
 var utils = require('../utils/writer.js');
 var dbPool = require('../db/DbManager');
 var logger = require('../utils/LogFactory').getLogger();
+var Mood = require('../models/mood');
 
 const tableName = 'mood_for_student_lecture';
 const getAllQuery = [ 'SELECT t.lectureid,',
@@ -41,7 +42,7 @@ exports.getMood = function() {
 
               } else {
 
-                  resolve(searchResult.rows);
+                  resolve( buildMoodList( searchResult ));
               }
           });
   });
@@ -72,7 +73,7 @@ exports.getMoodByLectureID = function(lectureID) {
                   if ( searchResult.rowCount === 0 ) {
                       reject('Lecture not found');
                   } else {
-                      resolve(searchResult.rows[0]);
+                      resolve( buildMoodObject( searchResult.rows[0] ));
                   }
               }
           });
@@ -168,7 +169,8 @@ exports.postMoodForLecture = function(lectureID,body) {
                                     if( error ) { reject(error); }
                                     else {
 
-                                        resolve(result.rows);
+
+                                        resolve(buildMoodList( searchResult ));
                                     }
                                   });
                           }
@@ -197,3 +199,24 @@ exports.checkLectureId = function(lectureID) {
     });
 }
 
+
+/***
+ * Builds the Answer Object with the given row
+ * @param row
+ * @returns {*}
+ */
+function buildMoodObject( row ) {
+
+    return new Mood( row.lectureid, row.positive, row.negative, row.neutral );
+}
+
+
+function buildMoodList( searchResult ) {
+
+    var result = [];
+    for( var i = 0; i < searchResult.rowCount; i++ ) {
+        result.push( buildMoodObject( searchResult.rows[i] ));
+    }
+
+    return result;
+}
