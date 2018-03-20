@@ -1,3 +1,18 @@
 .chat-container {
     height: 100%;
 }
+
+.mood-icon {
+    cursor: pointer;
+}
+
+.mood-icon-selected {
+    -webkit-box-shadow: 0px 0px 3px 5px #f21614;
+    -moz-box-shadow: 0px 0px 3px 5px #f21614;
+    box-shadow: 0px 0px 3px 5px #f21614;
+}
+
+.newQuestionDialogDiv {
+    padding-left: 5%;
+    padding-right: 5%;
+}

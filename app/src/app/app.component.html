@@ -6,12 +6,12 @@
 
     <div class="main-panel">
         <navbar-cmp></navbar-cmp>
-        <div *ngIf="!loggedin">
+        <div *ngIf="!isLoggedIn()">
 
             <div class="main-content">
 
                 <div class="container-fluid">
-                    <!-- Common Lecture informations -->
+                    <!-- Common Lecture information -->
                     <div class="row">
 
                         <div class="card col-md-4 col-md-offset-4 text-center">
@@ -21,7 +21,7 @@
 
                             <div class="content ">
 
-                                <form class="form-inline " [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
+                                <form class="form-inline " [formGroup]="loginForm" (ngSubmit)="loginUser()" novalidate>
 
                                     <br/>
                                     <div class="form-group">
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div *ngIf="loggedin">
+        <div *ngIf="isLoggedIn()">
 
             <router-outlet></router-outlet>
             <div *ngIf="isMap('maps')">

@@ -17,7 +17,6 @@ import { UserComponent } from './user/user.component';
 import { TablesComponent } from './tables/tables.component';
 import { TypographyComponent } from './typography/typography.component';
 import { IconsComponent } from './icons/icons.component';
-import { MapsComponent } from './maps/maps.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { UpgradeComponent } from './upgrade/upgrade.component';
 import {UserService} from './services/user.service';
@@ -34,8 +33,8 @@ import {LectureComponent} from "./lecture/lecture.component";
 import {ChatMessageComponent} from "./chat/chatmessage.component";
 import {DatePipe} from "@angular/common";
 import {TextpreviewPipe} from "./pipes/textpreview.pipe";
-import {QuestionpreviewComponent} from "./lecture/questionpreview.component";
-
+import {QuestionoverviewComponent} from "./question/questionoverview.component";
+import { QuestionviewComponent } from './question/questionview/questionview.component';
 
 
 @NgModule({
@@ -46,17 +45,16 @@ import {QuestionpreviewComponent} from "./lecture/questionpreview.component";
     TablesComponent,
     TypographyComponent,
     IconsComponent,
-    MapsComponent,
     NotificationsComponent,
     UpgradeComponent,
     ChatComponent,
     ChatMessageComponent,
     LectureComponent,
-    QuestionpreviewComponent,
-
+    QuestionoverviewComponent,
+    QuestionviewComponent,
 
     // Pips
-    TextpreviewPipe
+    TextpreviewPipe,
   ],
   imports: [
     BrowserModule,

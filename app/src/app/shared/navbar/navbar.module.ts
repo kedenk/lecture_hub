@@ -12,9 +12,5 @@ import {UserService} from "../../services/user.service";
 
 export class NavbarModule {
 
-    constructor(private userService: UserService) {}
-
-    logout(): void {
-        this.userService.logout();
-    }
+    constructor() {}
 }

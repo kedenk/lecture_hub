@@ -7,8 +7,8 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="header">
-                        <h4 class="title">{{lecture.lecturename}}</h4>
-                        <p class="category">{{lecture.lecturedescription}}</p>
+                        <h4 class="title">{{lecture.lectureName}}</h4>
+                        <p class="category">{{lecture.lectureDescription}}</p>
                     </div>
                     <div class="content"></div>
                 </div>
@@ -18,56 +18,51 @@
             <div class="col-md-4">
                 <ngx-loading [show]="moodIsLoading" ></ngx-loading>
 
-                <!--
-                // I like this chart but I have to use smileys
-
-                <lbd-chart
-                        *ngIf="mood; else noMoodAvailable"
-                        [title]="'Course Mood'"
-                        [chartClass]="'ct-perfect-fourth'"
-                        [chartType]="moodChartType"
-                        [chartData]="moodChartData"
-                        [legendItems]="moodChartLegendItems"
-                        [withHr]="true"
-                        [footerIconClass]="'fa fa-clock-o'"
-                        [footerText]="moodLastUpdateMessage">
-                </lbd-chart>
-
-                <ng-template #noMoodAvailable>
-                    <div class="card">
-                        <div class="header">
-                            <h5 class="title">Course Mood</h5>
-                        </div>
-                        <div class="content">
-                            {{ moodErrorMessage }}
-                        </div>
-                    </div>
-                </ng-template>
-
-                -->
-
                 <div class="card">
                     <div class="header">
                         <h4 class="title">Course Mood</h4>
+                        <!-- <p class="category">The size of the icon shows the distribution of votes. Big icon, many votes. For a vote click on your opinion.</p> -->
                     </div>
 
                     <div class="content">
-
-                        <img src="/assets/img/positive_smiley.png" class="img-fluid" style="width: 15%">
-
-
-                        <img src="/assets/img/neutral_smiley.png" class="img-fluid" style="width: 15%">
-
-
-                        <img src="/assets/img/negative_smiley.png" class="img-fluid" style="width: 15%">
-
+                        <div class="row">
+                            <!-- Positive mood icon -->
+                            <div class="col-md-4 text-center">
+                                <img src="/assets/img/positive_smiley.png"
+                                     (click)="sendMood( 1 )"
+                                     class="img-fluid mood-icon"
+                                     [style.width.%]="moodPosIconSize"
+                                     [ngClass]="{'mood-icon-selected': userLectureMood === 1}"
+                                >
+                            </div>
+                            <!-- Neutral mood icon -->
+                            <div class="col-md-4 text-center">
+                                <img src="/assets/img/neutral_smiley.png"
+                                     (click)="sendMood( 0 )"
+                                     class="img-fluid mood-icon"
+                                     [style.width.%]="moodNeutIconSize"
+                                     [ngClass]="{'mood-icon-selected': userLectureMood === 0}"
+                                >
+                            </div>
+                            <!-- Negative mood icon -->
+                            <div class="col-md-4 text-center">
+                                <img src="/assets/img/negative_smiley.png"
+                                     (click)="sendMood( -1 )"
+                                     class="img-fluid mood-icon"
+                                     [style.width.%]="moodNegIconSize"
+                                     [ngClass]="{'mood-icon-selected': userLectureMood === -1}"
+                                >
+                            </div>
+                        </div>
+                        <!--
                         <br/>
-                        <p *ngIf="mood">Positive: {{mood.positive}}  Neutral: {{mood.neutral}}  Negative: {{mood.negative}}</p>
-                        <p *ngIf="!mood">Positive: --  Neutral: --  Negative: --</p>
+                        <p>Your vote: {{userLectureMood}}</p>
+                        -->
                         <hr/>
                         <div class="stats">
                             <i [ngClass]="footerIconClass"></i> {{ moodLastUpdateMessage }}
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -104,13 +99,30 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="header">
+
                         <h4 class="title">Question - Answer - Section</h4>
                         <p class="category">Here you can ask questions related to this course. The questions are ordered by their rating.
                             The hottest ones are the first. </p>
+
+                        <button class="btn btn-primary" (click)="showNewQuestionDialog()" *ngIf="!isQuestionDialog">Ask Question</button>
+
                     </div>
 
                     <div class="content">
-                        <app-questionpreview [lectureId]="lecture.lectureid"></app-questionpreview>
+                        <!-- new question -->
+                        <div class="row newQuestionDialogDiv" *ngIf="isQuestionDialog">
+                            <ngx-loading [show]="isQuestionAdding"></ngx-loading>
+
+                            <hr/>
+                            <textarea type="text" class="form-control" [(ngModel)]="newQuestionContent" placeholder="Type your question..." minlength="50"></textarea>
+                            <br/>
+                            <button type="button" class="btn btn-primary" (click)="sendNewQuestion()">Ask Question</button>
+                            <button type="button" class="btn btn-danger" (click)="closeNewQuestionDialog()">Abort</button>
+
+                            <hr/>
+                        </div>
+
+                        <app-questionoverview [lectureId]="lecture.lectureID"></app-questionoverview>
                     </div>
                 </div>
             </div>

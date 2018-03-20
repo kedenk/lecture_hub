@@ -34,7 +34,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         } else {
             this.chatService.initSocket();
-            this.chatService.registerChat(this.lecture.lectureid, this.currentStudent.studentid);
+            this.chatService.registerChat(this.lecture.lectureID, this.currentStudent.studentID);
         }
 
         this.chatForm = new FormGroup({
@@ -44,9 +44,9 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.chatMessageSubscription = this.chatService.onMessage().subscribe(
             msg => {
 
-                if ( msg !== undefined && this.lecture.lectureid === msg.lectureid ) {
+                if ( msg !== undefined && this.lecture.lectureID === msg.lectureID ) {
 
-                    const tmp = new ChatMessageRec(msg.lectureid, msg.username, msg.message);
+                    const tmp = new ChatMessageRec(msg.lectureID, msg.username, msg.message);
                     tmp.date = new Date();
 
                     this.addChatMessage(tmp);
@@ -62,6 +62,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         // unsubscribe subscribtions
         this.chatMessageSubscription.unsubscribe();
+
+        // disconnect socket
+        this.chatService.closeSocket();
     }
 
     addChatMessage( message: ChatMessageRec ): void {
@@ -76,7 +79,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         if ( this.chatForm.valid ) {
             // webservice
-            this.chatService.sendMessage(this.lecture.lectureid, this.currentStudent.studentid, this.chatForm.value.chatMessage);
+            this.chatService.sendMessage(this.lecture.lectureID, this.currentStudent.studentID, this.chatForm.value.chatMessage);
             this.chatForm.reset();
         }
     }

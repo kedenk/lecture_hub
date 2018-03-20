@@ -5,6 +5,9 @@ var Mood = require('../service/MoodService');
 var HttpStatus = require('http-status-codes');
 var logger = require('../utils/LogFactory').getLogger();
 
+var websocket = require('../websocket/sockets');
+var OnMoodChanged = require('../models/onMoodChanged');
+
 module.exports.getMood = function getMood (req, res, next) {
   Mood.getMood()
     .then(function (response) {
@@ -79,6 +82,10 @@ module.exports.postMoodForLecture = function postMoodForLecture (req, res, next)
         .then(function() {
             Mood.postMoodForLecture(lectureID,body)
                 .then(function (response) {
+
+                    // notify about mood changed
+                    websocket.onMoodChanged( new OnMoodChanged( lectureID, response ) );
+
                     utils.writeJson(res, response);
                 })
                 .catch(function (response) {

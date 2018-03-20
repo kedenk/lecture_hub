@@ -20,7 +20,7 @@ exports.addStudent = function(student) {
           .then( res => {
               if( res.rowCount > 0 ) {
 
-                  resolve(res.rows[0]);
+                  resolve( buildStudent( res.rows[0] ));
 
               } else {
 

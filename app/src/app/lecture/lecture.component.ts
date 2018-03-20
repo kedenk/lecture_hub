@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Lecture} from '../api/model/models';
+import {Lecture, Body3} from '../api/model/models';
 import {Mood} from '../api/model/mood';
 import {MoodService} from '../api/api/mood.service';
 import {
@@ -8,13 +8,17 @@ import {
     UinotificationService
 } from 'app/services/uinotification.service';
 import {ChartType, LegendItem} from 'app/lbd/lbd-chart/lbd-chart.component';
-import {Subscription} from "rxjs/Subscription";
-import {ServerNotificationService} from "../services/servernotification.service";
-import {DatePipe} from "@angular/common";
+import {Subscription} from 'rxjs/Subscription';
+import {ServerNotificationService} from '../services/servernotification.service';
+import {DatePipe} from '@angular/common';
+import {UserService} from '../services/user.service';
+import {Body} from '../api/model/body';
+import {QuestionService} from '../api/api/question.service';
 
 @Component({
     selector: 'app-lecture',
-    templateUrl: './lecture.component.html'
+    templateUrl: './lecture.component.html',
+    styleUrls: [ './lecture.component.css' ]
 })
 export class LectureComponent implements OnInit, OnDestroy {
 
@@ -22,19 +26,29 @@ export class LectureComponent implements OnInit, OnDestroy {
 
     mood: Mood;
     moodIsLoading = false;
-    moodChartType: ChartType;
-    moodChartData: any;
-    moodChartLegendItems: LegendItem[];
     moodLastUpdate: Date;
     moodLastUpdateMessage: string;
     moodErrorMessage: string;
+    userLectureMood: number = -5;
+
+    moodResizeMultiplicator: number = 5;
+    moodPosIconSize: number = 50;
+    moodNeutIconSize: number = 50;
+    moodNegIconSize: number = 50;
 
     moodUpdateSubscription: Subscription;
+
+    isQuestionDialog: boolean = false;
+    isQuestionAdding: boolean = false;
+    newQuestionContent: string = '';
+    minQuestionContentLength: number = 10;
 
     public constructor(private route: ActivatedRoute,
                        private moodService: MoodService,
                        private uiNotiService: UinotificationService,
                        private serverNotiService: ServerNotificationService,
+                       private userService: UserService,
+                       private questionService: QuestionService,
                        private datePipe: DatePipe) {
 
         this.route.queryParams.subscribe(
@@ -50,10 +64,12 @@ export class LectureComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
 
         this.refreshMood();
+        this.getStudentsMood();
 
         this.serverNotiService.initSocket();
         this.moodUpdateSubscription = this.serverNotiService.onMoodChanged().subscribe(data => {
             this.mood = data;
+            this.updateMoodIcons();
             this.setLastMoodUpdateTime();
         });
     }
@@ -66,26 +82,67 @@ export class LectureComponent implements OnInit, OnDestroy {
     }
 
 
-    initMoodChart(): void {
+    /***
+     * Sends the current mood for the logged student
+     * @param value 1 | 0 | -1
+     */
+    sendMood( value ): void {
 
-        const fraction = 0;
-        const moodSum = this.mood.neutral + this.mood.positive + this.mood.negative;
-        const posPerc = (this.mood.positive / moodSum) * 100;
-        const neutPerc = (this.mood.neutral / moodSum) * 100;
-        const negPerc = (this.mood.negative / moodSum) * 100;
+        if ( value !== 1 && value !== 0 && value !== -1 ) {
+            console.error( 'No valid mood value given' );
+            return;
+        }
+        this.moodIsLoading = true;
 
-        this.moodChartType = ChartType.Pie;
-        this.moodChartData = {
-            labels: [posPerc.toFixed(fraction).toString() + '%',
-                neutPerc.toFixed(fraction).toString() + '%',
-                negPerc.toFixed(fraction).toString() + '%'],
-            series: [posPerc, neutPerc, negPerc]
-        };
-        this.moodChartLegendItems = [
-            { title: 'Positive (' + this.mood.positive + ')', imageClass: 'fa fa-circle text-info' },
-            { title: 'Neutral (' + this.mood.neutral + ')', imageClass: 'fa fa-circle text-warning' },
-            { title: 'Negative (' + this.mood.negative + ')', imageClass: 'fa fa-circle text-danger' }
-        ];
+        let b: Body = new Body();
+        b.studentID = parseInt(this.userService.getCurrentUser().studentID, 10);
+        b.mood = value;
+        this.moodService.postMoodForLecture( this.lecture.lectureID, b ).subscribe(
+            data => {
+                this.mood = data;
+                this.updateMoodIcons();
+                this.getStudentsMood();
+                this.moodIsLoading = false;
+                this.setLastMoodUpdateTime();
+            },
+            error => {
+                console.error(error);
+                let msg: string = 'Unexpected error occurred. Please try again later.';
+
+                if( error.status === 404 ) {
+                    msg = 'Lecture not found';
+                }
+                if( error.status === 403 ) {
+                    msg = 'Invalid studentID';
+                }
+
+                this.uiNotiService.showNotification(NotificationPosition.top,
+                    NotificationAlign.center,
+                    NotificationTypes.danger,
+                    msg);
+
+                this.moodIsLoading = false;
+            }
+        )
+    }
+
+    /***
+     * Get mood for lecture for current logged student
+     */
+    getStudentsMood(): void {
+
+        this.moodService.getMoodForStudentByLecture( this.lecture.lectureID, parseInt(this.userService.getCurrentUser().studentID, 10) ).subscribe(
+            data => {
+                this.userLectureMood = data.mood;
+            },
+            error => {
+                console.error(error);
+                this.uiNotiService.showNotification(NotificationPosition.top,
+                    NotificationAlign.center,
+                    NotificationTypes.danger,
+                    'Unable to fetch your mood.');
+            }
+        );
     }
 
     setLastMoodUpdateTime(): void {
@@ -100,13 +157,13 @@ export class LectureComponent implements OnInit, OnDestroy {
     refreshMood(): void {
 
         this.moodIsLoading = true;
-        this.moodService.getMoodByLectureID( this.lecture.lectureid ).subscribe(
+        this.moodService.getMoodByLectureID( this.lecture.lectureID ).subscribe(
             data => {
                 this.mood = data;
+                this.updateMoodIcons();
                 this.moodIsLoading = false;
                 this.setLastMoodUpdateTime();
 
-                this.initMoodChart();
             },
             error => {
 
@@ -126,4 +183,66 @@ export class LectureComponent implements OnInit, OnDestroy {
         );
     }
 
+    updateMoodIcons(): void {
+
+        if( this.mood ) {
+            this.moodPosIconSize = this.moodPosIconSize + (this.mood.positive * this.moodResizeMultiplicator);
+            this.moodNeutIconSize = this.moodNeutIconSize + (this.mood.neutral * this.moodResizeMultiplicator);
+            this.moodNegIconSize = this.moodNegIconSize + (this.mood.negative * this.moodResizeMultiplicator);
+        }
+    }
+
+
+    showNewQuestionDialog(): void {
+        this.isQuestionDialog = true;
+    }
+
+    closeNewQuestionDialog(): void {
+        this.isQuestionDialog = false;
+    }
+
+    sendNewQuestion(): void {
+
+        if( this.newQuestionContent !== undefined && this.newQuestionContent.length > this.minQuestionContentLength ) {
+
+            this.isQuestionAdding = true;
+
+            let b: Body3 = new Body3();
+            b.studentID = parseInt(this.userService.getCurrentUser().studentID, 10);
+            b.textContent = this.newQuestionContent;
+
+            console.log(b);
+
+            this.questionService.addQuestion( this.lecture.lectureID, b).subscribe(
+                data => {
+
+                    this.uiNotiService.showNotification(NotificationPosition.top,
+                        NotificationAlign.center,
+                        NotificationTypes.success,
+                        'Question successfully submitted.');
+
+                    this.newQuestionContent = '';
+                    this.closeNewQuestionDialog();
+                    this.isQuestionAdding = false;
+                },
+                error => {
+                    console.error(error);
+
+                    this.uiNotiService.showNotification(NotificationPosition.top,
+                        NotificationAlign.center,
+                        NotificationTypes.danger,
+                        error.message);
+
+                    this.isQuestionAdding = false;
+                }
+            );
+
+        } else {
+
+            this.uiNotiService.showNotification(NotificationPosition.top,
+                NotificationAlign.center,
+                NotificationTypes.warning,
+                'Question should not be empty and the text longer than ' + this.minQuestionContentLength + ' characters.');
+        }
+    }
 }

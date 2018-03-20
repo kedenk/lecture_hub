@@ -1,4 +1,4 @@
-import {Injectable, OnInit} from '@angular/core';
+import {Injectable, OnDestroy, OnInit} from '@angular/core';
 import * as socketIO from 'socket.io-client';
 import {Observable} from 'rxjs/Observable';
 import {ChatMessageSend} from "../api/model/chatmessagesend";
@@ -16,7 +16,7 @@ class RegisterMessage {
 }
 
 @Injectable()
-export class ChatService implements OnInit {
+export class ChatService {
 
     private url = 'http://localhost:3000';
     private socket;
@@ -25,12 +25,12 @@ export class ChatService implements OnInit {
     private onPropagateTopic = 'onReceiveMessage';
     private onRegisterTopic = 'onRegisterForChat';
 
-    ngOnInit(): void {
+    public initSocket() {
+        this.socket = socketIO(this.url);
     }
 
-    public initSocket() {
-
-        this.socket = socketIO(this.url);
+    public closeSocket(): void {
+        this.socket.close();
     }
 
     public registerChat( lectureID: number, studentID: string): void {

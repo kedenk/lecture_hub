@@ -33,6 +33,7 @@ exports.addQuestion = function(lectureID,body) {
       (err, cursor) => {
           if(err) {
               reject(err);
+              return;
           }
 
           // successfully added
@@ -46,8 +47,9 @@ exports.addQuestion = function(lectureID,body) {
 
                   })
                   .catch(function(response) {
-                      console.error(response);
+
                       reject('Cant fetch new created question');
+                      return;
                   });
 
           } else {

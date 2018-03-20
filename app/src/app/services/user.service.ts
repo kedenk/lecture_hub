@@ -6,9 +6,8 @@ import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class UserService {
 
-    currentUser: Student;
-
-    cookieId = 'userid';
+    cookieStudentId = 'userid';
+    cookieStudentName = 'username';
 
     constructor(
         private cookieService: CookieService,
@@ -16,63 +15,96 @@ export class UserService {
     ) {}
 
     public getCurrentUserId(): string {
-        return this.cookieService.get('userid');
+        return this.getStudentCookie().studentID;
     }
 
     public getCurrentUser(): Student {
-        return this.currentUser;
+        return this.getStudentCookie();
     }
 
-    public isLoggedIn(): string {
-        console.log(this.cookieService.getAll());
-
-        return this.getCurrentUserId();
+    public isLoggedIn(): boolean {
+        if( this.getStudentCookie() !== null ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public logout(): void {
-        this.cookieService.delete(this.cookieId);
-        this.currentUser = undefined;
+        console.log("logout");
+        this.cookieService.delete(this.cookieStudentId);
+        this.cookieService.delete(this.cookieStudentName);
     }
 
-    public getUserId(username): Observable<Student> {
+    public login(username: string): Observable<Student> {
 
-        const userId: string = this.cookieService.get(this.cookieId);
-        if ( userId === undefined ) {
+        console.log("All cookies");
+        console.log(this.cookieService.getAll());
+        let currentUser = this.checkUsername( username );
+        if ( currentUser === null ) {
 
-            return this.getNewUserId(username);
+            console.log("user not in cookie");
+            console.log("create new");
+
+            let newStudent: Student = new Student();
+            newStudent.username = username;
+            this.studentService.addStudent( newStudent ).subscribe(
+                data => {
+                    console.log( "new user" );
+                    console.log( data );
+                    currentUser = data;
+                    this.setStudentCookie( currentUser );
+
+                    return new Observable<Student>((observer) => {
+                        observer.next(currentUser);
+                        observer.complete();
+                    });
+                },
+                error => {
+                    console.error("Can't add student");
+                    new Error("No Server connection.");
+                }
+            );
+
+        } else {
+
+            console.log("user in cookies");
+
+            return new Observable<Student>((observer) => {
+                observer.next(currentUser);
+                observer.complete();
+            });
         }
-
-        const student: Student = new Student();
-        student.username = username;
-        student.studentid = userId;
-
-        return new Observable<Student>((observer) => {
-            observer.next(student);
-            observer.complete();
-        });
     }
 
-    private getNewUserId(username): Observable<Student> {
+    private setStudentCookie( student: Student ): void {
 
-        const newStudent: Student = new Student();
-        newStudent.username = username;
-
-        this.studentService.addStudent(newStudent).subscribe(
-            data => {
-                this.currentUser = data;
-                this.storeUserId(data.studentid);
-                return new Observable<Student>((observer) => {
-                    observer.next(data);
-                    observer.complete();
-                });
-            }
-        );
-
-        return null;
+        console.log("Set cookie: ", student);
+        this.cookieService.set( this.cookieStudentId, student.studentID, 2147483647);
+        this.cookieService.set( this.cookieStudentName, student.username, 2147483647);
     }
 
-    private storeUserId(userId): void {
+    private getStudentCookie(): Student {
 
-        this.cookieService.set(this.cookieId, userId);
+        if( this.cookieService.check(this.cookieStudentId) && this.cookieService.check(this.cookieStudentName) ) {
+
+            let student: Student = new Student();
+            student.studentID = this.cookieService.get(this.cookieStudentId);
+            student.username = this.cookieService.get(this.cookieStudentName);
+
+            return student;
+        } else {
+            return null;
+        }
+    }
+
+    private checkUsername( username: string ): Student {
+
+        let student: Student = this.getStudentCookie();
+        if( student !== null && student.username === username) {
+            return student;
+        } else {
+            return null;
+        }
     }
 }

@@ -12,7 +12,7 @@
 
 
 
-export interface Body4 {
+export class Body4 {
     textContent: string;
     studentID: number;
 }

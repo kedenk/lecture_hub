@@ -1,12 +1,12 @@
 export class ChatMessageSend {
 
-    lectureid?: number;
-    studentid?: string;
+    lectureID?: number;
+    studentID?: string;
     message?: string;
 
-    constructor(lectureID: number, studentid: string, message: string) {
-        this.lectureid = lectureID;
-        this.studentid = studentid;
+    constructor(lectureID: number, studentID: string, message: string) {
+        this.lectureID = lectureID;
+        this.studentID = studentID;
         this.message = message;
     }
 }

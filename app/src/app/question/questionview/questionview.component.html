@@ -1,0 +1,153 @@
+<ngx-loading [show]="isLoading"></ngx-loading>
+
+<div *ngIf="question !== undefined">
+  <div class="col-md-1 text-center rateDiv">
+    <ngx-loading [show]="isVotingLoading"></ngx-loading>
+    <span class="glyphicon glyphicon-chevron-up glyphicon-large glyphicon-vote" (click)="onQuestionUpvote(question)" [ngClass]="{voted: question.studentVote == 1}"></span>
+    <strong><p class="voteRatioLabel" *ngIf="question.voteRatio">{{question.voteRatio}}</p></strong>
+    <strong><p class="voteRatioLabel" *ngIf="!question.voteRatio">0</p></strong>
+    <span class="glyphicon glyphicon-chevron-down glyphicon-large glyphicon-vote" (click)="onQuestionDownvote(question)" [ngClass]="{voted: question.studentVote == -1}"></span>
+  </div>
+
+
+  <div class="col-md-11">
+    <div class="card">
+      <div class="header">
+        <h5 class="title"><strong>{{question.author.username}}</strong> asked:</h5>
+      </div>
+
+      <!-- Question text content with hottest answers -->
+      <div class="content">
+        <!-- shows the content of the question -->
+        <ng-container *ngIf="!isUpdateDialog">
+          {{question.textContent}}
+        </ng-container>
+
+        <!-- if isUpdateDialog is true, a textarea is shown -->
+        <ng-container *ngIf="isUpdateDialog">
+          <textarea type="text" class="form-control" placeholder="Your question text" [(ngModel)]="changedQuestionContent"></textarea>
+          <button class="btn btn-primary" (click)="sendUpdatedQuestion()">Send</button>
+          <button class="btn btn-danger" (click)="closeUpdateDialog()">Abort</button>
+        </ng-container>
+
+        <br/>
+        <br/>
+        <button class="btn btn-primary"
+                (click)="showAnswerDialog()"
+                [disabled]="isAnswerDialog"
+                *ngIf="!isAnswerDialog">Write Answer</button>
+
+        <button *ngIf="isAuthor()"
+                class="btn btn-warning"
+                (click)="showUpdateDialog()"
+                [disabled]="isUpdateDialog">Update Question</button>
+
+        <!-- dialog to write an answer -->
+        <div *ngIf="isAnswerDialog">
+          <ngx-loading [show]="isAnswerSending"></ngx-loading>
+
+          <div class="card">
+            <div class="header">
+              <h4 class="title">Write an answer</h4>
+            </div>
+            <div class="content">
+              <div class="form-group">
+                <label>Answer</label>
+                <textarea class="form-control" placeholder="Your answer..." [(ngModel)]="newAnswerTextContent"></textarea>
+              </div>
+              <button class="btn btn-primary" (click)="sendNewAnswer()">Send</button>
+              <button class="btn btn-danger" (click)="closeNewAnswerDialog()">Abort</button>
+            </div>
+          </div>
+
+        </div>
+
+        <br/>
+        <hr/>
+
+        <!-- some answers for this question -->
+        <!-- show all answers -->
+        <ng-container *ngIf="!onlyPreview && answers">
+          <div class="row" *ngFor="let answer of answers">
+
+            <div class="col-md-1 text-center rateDiv">
+              <ngx-loading [show]="isAnswerVotingLoading"></ngx-loading>
+              <span class="glyphicon glyphicon-chevron-up glyphicon-large glyphicon-vote" (click)="onAnswerUpvote(answer)" [ngClass]="{voted: answer.studentVote == 1}"></span>
+              <p class="voteRatioLabel" *ngIf="answer.voteRatio"><strong>{{answer.voteRatio}}</strong></p>
+              <p class="voteRatioLabel" *ngIf="!answer.voteRatio"><strong>0</strong></p>
+              <span class="glyphicon glyphicon-chevron-down glyphicon-large glyphicon-vote" (click)="onAnswerDownvote(answer)" [ngClass]="{voted: answer.studentVote == -1}"></span>
+            </div>
+
+            <div class="col-md-11">
+              <div class="card">
+                <div class="content">
+                  <ng-container *ngIf="!isUpdateAnswerDialog">
+                    {{answer.textContent}}
+                  </ng-container>
+                  <ng-container *ngIf="isUpdateAnswerDialog">
+                    <ngx-loading [show]="isAnswerUpdateSending"></ngx-loading>
+                    <textarea class="form-control" [(ngModel)]="changedAnswerContent" title="Textarea to update this answer."></textarea>
+                    <button type="button" class="btn btn-primary" (click)="sendAnswerUpdate( answer )">Update</button>
+                    <button type="button" class="btn btn-danger" (click)="closeUpdateAnswerDialog()">Abort</button>
+                  </ng-container>
+                  <hr/>
+                  <div class="stats">
+                    Written by <strong>{{answer.author.username}}</strong>
+                    <a class="myLink" (click)="showUpdateAnswerDialog( answer )" *ngIf="isAnswerAuthor( answer )"> -- Update Answer</a>
+                  </div>
+                </div>
+              </div>
+              <br/>
+
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- show only hottest answer -->
+        <ng-container *ngIf="onlyPreview && answers && answers[0]">
+          <div class="row">
+
+            <div class="col-md-1 text-center rateDiv">
+              <ngx-loading [show]="isAnswerVotingLoading"></ngx-loading>
+              <span class="glyphicon glyphicon-chevron-up glyphicon-large glyphicon-vote" (click)="onAnswerUpvote(answers[0])" [ngClass]="{voted: answers[0].studentVote == 1}"></span>
+             <p class="voteRatioLabel" *ngIf="answers[0].voteRatio"><strong>{{answers[0].voteRatio}}</strong></p>
+              <p class="voteRatioLabel" *ngIf="!answers[0].voteRatio"><strong>0</strong></p>
+              <span class="glyphicon glyphicon-chevron-down glyphicon-large glyphicon-vote" (click)="onAnswerDownvote(answers[0])" [ngClass]="{voted: answers[0].studentVote == -1}"></span>
+            </div>
+
+            <div class="col-md-11">
+              <div class="card">
+                <div class="content">
+                  <ng-container *ngIf="!isUpdateAnswerDialog">
+                    {{answers[0].textContent}}
+                  </ng-container>
+                  <ng-container *ngIf="isUpdateAnswerDialog">
+                    <ngx-loading [show]="isAnswerUpdateSending"></ngx-loading>
+                    <textarea class="form-control" [(ngModel)]="changedAnswerContent" title="Textarea to update this answer."></textarea>
+                    <button type="button" class="btn btn-primary" (click)="sendAnswerUpdate( answers[0] )">Update</button>
+                    <button type="button" class="btn btn-danger" (click)="closeUpdateAnswerDialog()">Abort</button>
+                  </ng-container>
+                  <hr/>
+                  <div class="stats">
+                    Written by <strong>{{answers[0].author.username}}</strong>
+                    <a class="myLink" (click)="showUpdateAnswerDialog( answers[0] )" *ngIf="isAnswerAuthor( answers[0] )"> -- Update Answer</a>
+                  </div>
+                </div>
+              </div>
+
+              <br/>
+            </div>
+          </div>
+        </ng-container>
+
+        <button type="button" class="btn btn-primary" (click)="showAllAnswers( false )" *ngIf="!onlyPreview">Show only hottest answer</button>
+        <button type="button"
+                class="btn btn-primary"
+                (click)="showAllAnswers( true )"
+                *ngIf="onlyPreview"
+                [disabled]="answers.length <= 1">Show all Answers</button>
+      </div>
+
+    </div>
+  </div>
+</div>

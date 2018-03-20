@@ -8,6 +8,7 @@ import {ChatService} from '../services/chat.service';
 import {Lecture} from '../api/model/models';
 import {LectureService} from 'app/api';
 import {NavigationExtras, Router} from '@angular/router';
+import {ServerNotificationService} from '../services/servernotification.service';
 
 @Component({
   selector: 'app-home',
@@ -20,23 +21,28 @@ export class HomeComponent implements OnInit {
     lastUpdate: Date;
     lecturesLoading = false;
 
+    previewLength = 100;
+
   constructor(
       private uiNotiService: UinotificationService,
-      private chatService: ChatService,
+      private serverNot: ServerNotificationService,
       private lectureService: LectureService,
       private router: Router
   ) { }
 
   ngOnInit() {
-
-      this.chatService.initSocket();
-      this.chatService.onMessage().subscribe(
-          data => {
-              this.uiNotiService.showNotification('top', 'center', NotificationTypes.success, data);
-              console.log(data);
-          });
-
       this.refreshLectures();
+
+      this.serverNot.initSocket();
+      this.serverNot.onNewQuestion().subscribe(
+          data => console.log(data),
+          error => console.error(error)
+      );
+
+      this.serverNot.onNewAnswer().subscribe(
+          data => console.log(data),
+          error => console.error(error)
+      );
     }
 
     /***

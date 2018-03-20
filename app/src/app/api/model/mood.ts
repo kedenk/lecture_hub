@@ -16,7 +16,7 @@ export class Mood {
     /**
      * lectureID of the corresponding lecture
      */
-    lectureid?: number;
+    lectureID?: number;
     /**
      * number of positive (1) mood votings
      */

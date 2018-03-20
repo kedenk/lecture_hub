@@ -12,7 +12,7 @@
 
 
 
-export interface Body2 {
+export class Body2 {
     vote: number;
     studentID: number;
 }

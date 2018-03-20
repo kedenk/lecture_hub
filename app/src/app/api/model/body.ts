@@ -12,7 +12,7 @@
 
 
 
-export interface Body {
+export class Body {
     mood: number;
     studentID: number;
 }

@@ -7,6 +7,11 @@ var Lecture = require('../service/LectureService');
 var HttpStatus = require('http-status-codes');
 var logger = require('../utils/LogFactory').getLogger();
 
+var websocket = require('../websocket/sockets');
+var OnQuestionVoteRatioChanged = require('../models/onQuestionVoteRatioChanged');
+var OnQuestionTextContentChanged = require('../models/onQuestionTextContentChanged');
+
+
 module.exports.addQuestion = function addQuestion (req, res, next) {
   var lectureID = req.params.lectureID;
   var newQuestion = req.body;
@@ -33,6 +38,10 @@ module.exports.addQuestion = function addQuestion (req, res, next) {
                   // store actual question
                   Question.addQuestion(lectureID,newQuestion)
                       .then(function (response) {
+
+                          // send notification
+                          websocket.onNewQuestion( response.lecture, response.questionID, response.voteRatio, response.author, response.textContent);
+
                           utils.writeJson(res, response);
                       })
                       .catch(function (response) {
@@ -190,6 +199,10 @@ module.exports.updateQuestion = function updateQuestion (req, res, next) {
           // update question
           Question.updateQuestion( questionID, question )
               .then(function (response) {
+
+                  // notify about question update
+                  websocket.onQuestionTextContentChanged(new OnQuestionTextContentChanged( questionID, response.textContent) );
+
                   utils.writeJson(res, response);
               })
               .catch(function (response) {
@@ -242,6 +255,10 @@ module.exports.voteQuestion = function voteQuestion (req, res, next) {
                     // if no vote is found user is allowed to vote
                     Question.voteQuestion( questionID, body )
                         .then(function (response) {
+
+                            // publish question vote changed
+                            websocket.onQuestionVoteRatioChanged(new OnQuestionVoteRatioChanged( questionID, response.voteRatio));
+
                             utils.writeJson(res, response);
                         })
                         .catch(function (response) {
@@ -259,6 +276,6 @@ module.exports.voteQuestion = function voteQuestion (req, res, next) {
 
 
 function writeError( res, msg, httpStatus ) {
-    logger.error(msg)
+    logger.error(msg);
     utils.writeJson(res, JSON.stringify(msg), httpStatus);
 }

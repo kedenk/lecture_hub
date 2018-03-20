@@ -7,6 +7,11 @@ var logger = require('../utils/LogFactory').getLogger();
 var HttpStatus = require('http-status-codes');
 var Student = require('../service/StudentService');
 
+var websocket = require('../websocket/sockets');
+var OnNewAnswer = require('../models/onNewAnswer');
+var OnAnswerVoteRatioChanged = require('../models/onAnswerVoteRatioChanged');
+var OnAnswerTextChanged = require('../models/onAnswerTextChanged');
+
 module.exports.addAnswer = function addAnswer (req, res, next) {
     var questionID = req.params.questionID;
     var body = req.body;
@@ -28,6 +33,10 @@ module.exports.addAnswer = function addAnswer (req, res, next) {
                     // insert answer
                     Answer.addAnswer(questionID,body)
                         .then(function (response) {
+
+                            // notify about new answer
+                            websocket.onNewAnswer(new OnNewAnswer(response.answerID, response.answerTo, response.voteRatio, response.author, response.textContent));
+
                             utils.writeJson(res, response);
                         })
                         .catch(function (response) {
@@ -196,6 +205,10 @@ module.exports.updateAnswer = function updateAnswer (req, res, next) {
           // update answer
           Answer.updateAnswer( answerID, body )
               .then(function (response) {
+
+                  // publish updated answer
+                  websocket.onAnswerTextChanged( new OnAnswerTextChanged( answerID, response.textContent ));
+
                   utils.writeJson(res, response);
               })
               .catch(function (response) {
@@ -242,6 +255,10 @@ module.exports.voteAnswer = function voteAnswer (req, res, next) {
                             // user has not voted. is allowed to vote
                             Answer.voteAnswer( answerID, body )
                                 .then(function (response) {
+
+                                    // publish vote
+                                    websocket.onAnswerVoteRatioChanged( new OnAnswerVoteRatioChanged( answerID, response.voteRatio ) );
+
                                     utils.writeJson(res, response);
                                 })
                                 .catch(function (response) {

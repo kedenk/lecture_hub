@@ -14,5 +14,5 @@
 
 export class Student {
     username: string;
-    studentid: string;
+    studentID: string;
 }

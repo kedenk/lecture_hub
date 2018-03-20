@@ -1,82 +1,32 @@
 'use strict';
 
 var logger = require('../utils/LogFactory').getLogger();
-var chatService = require('./ChatService.js');
 const studentService = require('./../service/studentService.js');
 
+var OnNewQuestion = require('./../models/onNewQuestion');
 
 var chatRegistration = {};
 var socketio;
 
 var Registration = function(studentID, username, lectureID, socket) {
-    this.studentid = studentID;
+    this.studentID = studentID;
     this.username = username;
-    this.lectureid = lectureID;
+    this.lectureID = lectureID;
     this.socket = socket;
-}
+};
 
 var OnReceiveMessage = function(lectureID, username, message) {
-    this.lectureid = lectureID;
+    this.lectureID = lectureID;
     this.username = username;
     this.message = message;
-}
-
-var Author = function(studentID, username) {
-    this.studentid = studentID;
-    this.username = username;
-}
-
-var OnNewQuestionMessage = function(lectureID, questionID, voteRatio, author, textContent) {
-    this.lectureid = lectureID;
-    this.questionid = questionID;
-    this.voteRatio = voteRatio;
-    this.author = author;
-    this.textContent = textContent;
-}
-
-var OnNewAnswer = function(answerID, questionID, voteRatio, author, textContent) {
-    this.answerid = answerID;
-    this.questionid = questionID;
-    this.voteRatio = voteRatio;
-    this.author = author;
-    this.textContent = textContent;
-}
-
-var OnQuestionVoteRatioChanged = function(questionID, voteRatio) {
-    this.questionid = questionID;
-    this.voteRatio = voteRatio;
-}
-
-var OnAnswerVoteRatioChanged = function(answerID, voteRatio) {
-    this.answerid = answerID;
-    this.voteRatio = voteRatio;
-}
-
-var OnQuestionTextContentChanged = function(questionID, textContent) {
-    this.questionid = questionID;
-    this.textContent = textContent;
-}
-
-var OnAnswerTextContentChanged = function(answerID, textContent) {
-    this.answerid = answerID;
-    this.textContent = textContent;
-}
-
-var OnMoodChanged = function(lectureID, mood) {
-    this.lectureid = lectureID;
-    this.mood = mood;
-}
-
-var Mood = function(positive, neutral, negative) {
-    this.positive = positive;
-    this.neutral = neutral;
-    this.negative = negative;
-}
-
+};
 
 module.exports = function( io ) {
 
-    socketio = io;
+    console.log( io );
+    if( io !== undefined ) {
+        socketio = io;
+    }
 
     const registerTopic = "onRegisterForChat";
     // Server receives messages from clients
@@ -96,10 +46,13 @@ module.exports = function( io ) {
             studentService.getStudentByStudentID( msg.studentID )
                 .then(function (response) {
 
-                    var reg = new Registration(msg.studentID, response[0].username, msg.lectureID, socket);
+                    var reg = new Registration(msg.studentID, response.username, msg.lectureID, socket);
                     chatRegistration[msg.studentID] = reg;
 
                     logger.info('New chat registration for: ' + chatRegistration[msg.studentID].username);
+                })
+                .catch(function (response) {
+                    logger.error(response);
                 });
         });
 
@@ -107,9 +60,9 @@ module.exports = function( io ) {
 
             logger.debug(msg);
 
-            if ( chatRegistration[msg.studentid] !== undefined ) {
+            if ( chatRegistration[msg.studentID] !== undefined ) {
 
-                propagateMessage( msg.lectureid, chatRegistration[msg.studentid].username, msg.message );
+                propagateMessage( msg.lectureID, chatRegistration[msg.studentID].username, msg.message );
             }
         });
     });
@@ -120,6 +73,7 @@ module.exports = function( io ) {
        Object.keys(chatRegistration).forEach(function(key) {
 
            if ( chatRegistration[key].socket === socket ) {
+               logger.debug('delete from chat registration');
                delete chatRegistration[key];
            }
        });
@@ -129,7 +83,7 @@ module.exports = function( io ) {
 
         Object.keys(chatRegistration).forEach(function(key) {
 
-            if( chatRegistration[key].lectureid === lectureID ) {
+            if( chatRegistration[key].lectureID === lectureID ) {
 
                 logger.debug("message: <" + message + "> TO -> " + username + "@" + lectureID );
                 io.to(chatRegistration[key].socket.id).emit(receiveMessageTopic, new OnReceiveMessage(lectureID, username, message));
@@ -140,25 +94,48 @@ module.exports = function( io ) {
 
 
 function sendMessage( topic, msg ) {
-    socketio.emit(topic, msg);
+
+    socketio.sockets.emit(topic, msg);
 }
 
-exports.onNewQuestion = function(lectureID, questionID, voteRatio, author, textContent) {
+module.exports.onNewQuestion = function(lectureID, questionID, voteRatio, author, textContent) {
 
-    sendMessage('onNewQuestion', new OnNewQuestionMessage(lectureID, questionID, voteRatio, author, textContent));
-}
+    logger.info("[Notification] New Question");
+    sendMessage('onNewQuestion', new OnNewQuestion(lectureID, questionID, voteRatio, author, textContent));
+};
 
-exports.onNewAnswer = function( newAnswerObj ) {
+module.exports.onNewAnswer = function( newAnswerObj ) {
 
+    logger.info("[Notification] New Answer", newAnswerObj);
     sendMessage('onNewAnswer', newAnswerObj);
-}
+};
 
-exports.onQuestionVoteRatioChanged = function( onQuestionVoteRatioChObj ) {
+module.exports.onQuestionVoteRatioChanged = function( onQuestionVoteRatioChObj ) {
 
+    logger.info("[Notification] Question Vote Ratio changed", onQuestionVoteRatioChObj);
     sendMessage('onQuestionVoteRatioChanged', onQuestionVoteRatioChObj);
-}
+};
 
-exports.onAnswerVoteRatioChanged = function( onAnswerVoteRatioChObj ) {
+module.exports.onAnswerVoteRatioChanged = function( onAnswerVoteRatioChObj ) {
 
+    logger.info("[Notification] Answer Vote Ratio changed", onAnswerVoteRatioChObj);
     sendMessage('onAnswerVoteRatioChanged', onAnswerVoteRatioChObj );
+};
+
+module.exports.onQuestionTextContentChanged = function ( onQuestionTextContentChangedObj ) {
+
+    logger.info("[Notification] Question text content changed", onQuestionTextContentChangedObj);
+    sendMessage('onQuestionTextContentChanged', onQuestionTextContentChangedObj );
+};
+
+module.exports.onAnswerTextChanged = function( onAnswertTextChangedObj ) {
+
+    logger.info("[Notification] Answer text content changed", onAnswertTextChangedObj);
+    sendMessage('onAnswerTextChanged', onAnswertTextChangedObj );
+};
+
+module.exports.onMoodChanged = function( onMoodChangedObj ) {
+
+    logger.info("[Notification] Mood changed", onMoodChangedObj);
+    sendMessage('onMoodChanged', onMoodChangedObj );
 }

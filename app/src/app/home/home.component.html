@@ -12,9 +12,9 @@
                         <h4 class="title">Lectures</h4>
                         <p class="category">All lectures</p>
                     </div>
-                    <div class="content">
+                    <div class="content table-responsive">
                         <div *ngIf="lectures.length > 0" class="table-full-width">
-                            <table class="table">
+                            <table class="table table-hover table-striped table-row-pointer">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -25,13 +25,13 @@
                                 <tbody>
                                 <tr *ngFor="let lecture of lectures" (click)="lectureSelected(lecture)">
                                     <td class="col-md-1">
-                                        {{lecture.lectureid}}
+                                        {{lecture.lectureID}}
                                     </td>
                                     <td class="col-md-4">
-                                        {{lecture.lecturename}}
+                                        {{lecture.lectureName}}
                                     </td>
-                                    <td class="col-md-7">
-                                        {{lecture.lecturedescription}}
+                                    <td class="col-md-7" data-toggle="tooltip" data-placement="bottom" title="{{lecture.lectureDescription}}">
+                                        {{lecture.lectureDescription | textPreview: previewLength }}
                                     </td>
                                 </tr>
 
@@ -47,7 +47,7 @@
                         <div class="footer">
                             <hr>
                             <div *ngIf="lastUpdate" class="stats">
-                                <i class="fa fa-history"></i> Updated {{lastUpdate | date:'dd.MM.yyyy HH:mm:ss' }} - <a (click)="refreshLectures()">Refresh</a>
+                                <i class="fa fa-history"></i> Updated {{lastUpdate | date:'dd.MM.yyyy HH:mm:ss' }} - <a class="myLink" (click)="refreshLectures()">Refresh</a>
                             </div>
                         </div>
                     </div>
