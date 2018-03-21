@@ -13,15 +13,12 @@ import { AppComponent } from './app.component';
 
 import { HomeComponent } from './home/home.component';
 import { UserComponent } from './user/user.component';
-import { TablesComponent } from './tables/tables.component';
 import { TypographyComponent } from './typography/typography.component';
-import { IconsComponent } from './icons/icons.component';
 import { NotificationsComponent } from './notifications/notifications.component';
-import { UpgradeComponent } from './upgrade/upgrade.component';
 import {UserService} from './services/user.service';
 import {UinotificationService} from './services/uinotification.service';
 import {CookieService} from 'ngx-cookie-service';
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HttpClientModule} from "@angular/common/http";
 import {ChatService} from "./services/chat.service";
 import {ServerNotificationService} from "./services/servernotification.service";
 import {WebsocketService} from "./services/websocket.service";
@@ -42,11 +39,8 @@ import { AnswerviewComponent } from './question/answerview/answerview.component'
     AppComponent,
     HomeComponent,
     UserComponent,
-    TablesComponent,
     TypographyComponent,
-    IconsComponent,
     NotificationsComponent,
-    UpgradeComponent,
     ChatComponent,
     ChatMessageComponent,
     LectureComponent,
