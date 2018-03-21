@@ -8,7 +8,6 @@ import { AppRoutingModule } from './app.routing';
 import { NavbarModule } from './shared/navbar/navbar.module';
 import { FooterModule } from './shared/footer/footer.module';
 import { SidebarModule } from './sidebar/sidebar.module';
-import { LbdModule } from './lbd/lbd.module';
 
 import { AppComponent } from './app.component';
 
@@ -35,6 +34,7 @@ import {DatePipe} from "@angular/common";
 import {TextpreviewPipe} from "./pipes/textpreview.pipe";
 import {QuestionoverviewComponent} from "./question/questionoverview.component";
 import { QuestionviewComponent } from './question/questionview/questionview.component';
+import { AnswerviewComponent } from './question/answerview/answerview.component';
 
 
 @NgModule({
@@ -55,6 +55,8 @@ import { QuestionviewComponent } from './question/questionview/questionview.comp
 
     // Pips
     TextpreviewPipe,
+
+    AnswerviewComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,7 +68,6 @@ import { QuestionviewComponent } from './question/questionview/questionview.comp
     SidebarModule,
     RouterModule,
     AppRoutingModule,
-    LbdModule,
     ReactiveFormsModule,
 
     LoadingModule.forRoot({

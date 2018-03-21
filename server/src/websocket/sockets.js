@@ -36,7 +36,7 @@ module.exports = function( io ) {
 
 
     io.on('connection', function(socket) {
-        logger.info('user connected');
+        logger.info('socket connected');
 
         socket.on(registerTopic, function( msg ) {
            logger.debug(msg);

@@ -7,7 +7,6 @@ import {
     NotificationAlign, NotificationPosition, NotificationTypes,
     UinotificationService
 } from 'app/services/uinotification.service';
-import {ChartType, LegendItem} from 'app/lbd/lbd-chart/lbd-chart.component';
 import {Subscription} from 'rxjs/Subscription';
 import {ServerNotificationService} from '../services/servernotification.service';
 import {DatePipe} from '@angular/common';

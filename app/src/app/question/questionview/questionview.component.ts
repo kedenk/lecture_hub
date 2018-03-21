@@ -36,7 +36,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
     private minQuestionText: number = 30;
 
     private isVotingLoading: boolean = false;
-    private isAnswerVotingLoading: boolean = false;
+
     private isAnswerLoading: boolean = false;
     private isLoading: boolean = false;
 
@@ -44,11 +44,11 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
     private isAnswerSending: boolean = false;
     private isUpdateDialog: boolean = false;
     private isUpdateSending: boolean = false;
-    private isUpdateAnswerDialog: boolean = false;
-    private isAnswerUpdateSending: boolean = false;
+
+
 
     private changedQuestionContent: string = '';
-    private changedAnswerContent: string = '';
+
 
     private onNewAnswerSubscription: Subscription;
     private onAnswerTextChangedSubscription: Subscription;
@@ -200,7 +200,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
         if ( changedVoteRatio !== undefined ) {
             this.answers.forEach(
                 answer => {
-                    if ( answer.answerID === changedVoteRatio.answerID ) {
+                    if ( answer.answerID === parseInt(changedVoteRatio.answerID.toString(), 10) ) {
                         answer.voteRatio = changedVoteRatio.voteRatio;
                         // new votes, we have to sort answers new
                         this.sortAnswers();
@@ -279,6 +279,11 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
     }
 
 
+    /***
+     * Performs the actual request of a question vote to the server
+     * @param {Question} question
+     * @param {number} vote
+     */
     private questionVote(question: Question, vote: number): void {
 
         if (!this.isVotingLoading && question !== undefined) {
@@ -295,6 +300,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
                         NotificationTypes.info,
                         'Successfully voted.');
 
+                    this.question.voteRatio = data.voteRatio;
                     this.question.studentVote = vote;
                     this.isVotingLoading = false;
                 },
@@ -317,63 +323,6 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
                         msg);
 
                     this.isVotingLoading = false;
-                }
-            );
-        }
-    }
-
-
-    onAnswerUpvote( answer: Answer ): void {
-        this.answerVote(answer, 1);
-    }
-
-    onAnswerDownvote( answer: Answer ): void {
-        this.answerVote(answer, -1);
-    }
-
-
-    private answerVote(answer: Answer, vote: number): void {
-
-        if (!this.isAnswerVotingLoading && answer !== undefined) {
-            this.isAnswerVotingLoading = true;
-
-            let b = new Body5();
-            b.vote = vote;
-            b.studentID = parseInt(this.userService.getCurrentUser().studentID);
-
-            this.answerService.voteAnswer(answer.answerID, b).subscribe(
-                data => {
-                    this.uiNotiService.showNotification(NotificationPosition.top,
-                        NotificationAlign.center,
-                        NotificationTypes.success,
-                        'Successfully voted.');
-
-                    // udpate votes
-                    answer.voteRatio = answer.voteRatio + vote;
-                    answer.studentVote = vote;
-
-                    this.sortAnswers();
-                    this.isAnswerVotingLoading = false;
-                },
-                error => {
-                    console.log(error);
-                    let msg = 'Unknown error. Please try again later.';
-
-                    switch(error.status) {
-                        case 405: msg = 'You already voted for this answer';
-                            break;
-                        case 403: msg = 'The studentID is invalid.';
-                            break;
-                        case 404: msg = 'The answer you voted for was not found.';
-                            break;
-                    }
-
-                    this.uiNotiService.showNotification(NotificationPosition.top,
-                        NotificationAlign.center,
-                        NotificationTypes.danger,
-                        msg);
-
-                    this.isAnswerVotingLoading = false;
                 }
             );
         }
@@ -485,52 +434,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
         }
     }
 
-
-    showUpdateAnswerDialog( answer: Answer ): void {
-        this.changedAnswerContent = answer.textContent;
-        this.isUpdateAnswerDialog = true;
-    }
-
-    closeUpdateAnswerDialog(): void {
-        this.changedAnswerContent = '';
-        this.isUpdateAnswerDialog = false;
-    }
-
     showAllAnswers( show: boolean ): void {
         this.onlyPreview = !show;
-    }
-
-    /***
-     * Sends a updated answer to the server
-     * @param {Answer} answer
-     */
-    sendAnswerUpdate( answer: Answer ) {
-
-        this.isAnswerUpdateSending = true;
-        let b: Body4 = new Body4();
-        b.studentID = parseInt(this.userService.getCurrentUserId(), 10);
-        b.textContent = this.changedAnswerContent;
-
-        this.answerService.updateAnswer( answer.answerID, b ).subscribe(
-            data => {
-
-                let a: AnswerTextChanged = new AnswerTextChanged();
-                a.answerID = data.answerID;
-                a.textContent = data.textContent;
-                this.changeAnswerText( a );
-                this.closeUpdateAnswerDialog();
-                this.isAnswerUpdateSending = false;
-            },
-            error => {
-                console.error(error);
-                this.isAnswerUpdateSending = false;
-            }
-        )
-    }
-
-    isAnswerAuthor( answer: Answer ): boolean {
-
-        let answerAuthor: number = parseInt(answer.author.studentID, 10);
-        return this.getCurrentUserID() === answerAuthor;
     }
 }
