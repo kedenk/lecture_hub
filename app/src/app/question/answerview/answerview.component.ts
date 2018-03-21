@@ -40,6 +40,7 @@ export class AnswerviewComponent {
      * Variables for answer change dialog
      */
     private changedAnswerContent: string = '';
+    private minAnswerTextLength: number = 10;
     private isUpdateAnswerDialog: boolean = false;
 
     constructor(
@@ -187,5 +188,14 @@ export class AnswerviewComponent {
 
         let answerAuthor: number = parseInt(answer.author.studentID, 10);
         return parseInt(this.userService.getCurrentUser().studentID, 10) === answerAuthor;
+    }
+
+    changedAnswerValid(): boolean {
+
+        if( this.changedAnswerContent ) {
+            return this.changedAnswerContent.length > this.minAnswerTextLength;
+        } else {
+            false;
+        }
     }
 }

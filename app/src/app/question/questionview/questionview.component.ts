@@ -17,6 +17,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {AnswerTextChanged} from '../../api/model/answertextchanged';
 import {AnswerVoteRatioChanged} from '../../api/model/answervoteratechanged';
 import {Body4} from '../../api/model/body4';
+import {NewAnswer} from '../../api/model/newanswer';
 
 @Component({
   selector: 'app-questionview',
@@ -33,7 +34,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
     private newAnswerTextContent: string = '';
     private minAnswerLength: number = 10;
-    private minQuestionText: number = 30;
+    private minQuestionText: number = 10;
 
     private isVotingLoading: boolean = false;
 
@@ -152,10 +153,15 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
      * Adds a new answer to the answer list
      * @param {Answer} newAnswer
      */
-    private addNewAnswer( newAnswer: Answer ): void {
+    private addNewAnswer( newAnswer: NewAnswer ): void {
 
         if ( this.answers === undefined ) {
             this.answers = [];
+        }
+
+        // check, if this answer is for this question
+        if( newAnswer.questionID !== this.question.questionID ) {
+            return;
         }
 
         // check if answer is already there
@@ -357,7 +363,6 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
      */
     sendNewAnswer(): void {
 
-        console.log(this.newAnswerTextContent);
         if ( this.newAnswerTextContent !== undefined && this.newAnswerTextContent.length > this.minAnswerLength ) {
 
             let b = new Body6();
@@ -370,6 +375,8 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
                     // add new answer to answers
                     this.isAnswerSending = false;
+                    // show all answers, if you added one
+                    this.onlyPreview = false;
                     this.closeNewAnswerDialog();
 
                     this.uiNotiService.showNotification(NotificationPosition.top,
@@ -442,12 +449,29 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
         this.onlyPreview = !show;
     }
 
+    /***
+     * Checks, if the new answer is valid
+     * @returns {boolean}
+     */
     newAnswerValid(): boolean {
 
         if( this.newAnswerTextContent ) {
             return this.newAnswerTextContent.length > this.minAnswerLength;
         } else {
             false;
+        }
+    }
+
+    /***
+     * Checks, if the changed question is valid
+     * @returns {boolean}
+     */
+    changedQuestionValid(): boolean {
+
+        if( this.changedQuestionContent ) {
+            return this.changedQuestionContent.length > this.minQuestionText;
+        } else {
+            return false;
         }
     }
 }

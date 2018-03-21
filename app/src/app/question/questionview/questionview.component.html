@@ -14,14 +14,14 @@
   <div class="col-md-11 col-xs-11">
     <div class="card questionCard">
       <div class="header">
-        <h5 class="title"><strong>{{question.author.username}}</strong> asked:</h5>
+        <!--<h5 class="title"><strong>{{question.author.username}}</strong> asked:</h5>-->
       </div>
 
       <!-- Question text content with hottest answers -->
       <div class="content">
         <!-- shows the content of the question -->
         <ng-container *ngIf="!isUpdateDialog">
-          {{question.textContent}}
+          <h5>{{question.textContent}}</h5>
         </ng-container>
 
         <!--
@@ -29,21 +29,27 @@
         -->
         <ng-container *ngIf="isUpdateDialog">
           <textarea type="text" class="form-control" placeholder="Your question text" [(ngModel)]="changedQuestionContent"></textarea>
-          <button class="btn btn-primary" (click)="sendUpdatedQuestion()">Send</button>
+          <small>Question must be at minimum {{minQuestionContentLength}} character long.</small>
+          <br/>
+
+          <button class="btn btn-primary" (click)="sendUpdatedQuestion()" [disabled]="!changedQuestionValid()">Send</button>
           <button class="btn btn-danger" (click)="closeUpdateDialog()">Abort</button>
         </ng-container>
 
-        <br/>
-        <br/>
-        <button class="btn btn-primary"
-                (click)="showAnswerDialog()"
-                [disabled]="isAnswerDialog"
-                *ngIf="!isAnswerDialog">Write Answer</button>
+        <hr/>
+        <div class="stats">
+          Written by <strong>{{question.author.username}}</strong>
+          <a class="myLink"
+             (click)="showUpdateDialog()"
+             *ngIf="isAuthor()"> -- Update Question</a>
 
-        <button *ngIf="isAuthor()"
-                class="btn btn-warning"
-                (click)="showUpdateDialog()"
-                [disabled]="isUpdateDialog">Update Question</button>
+          <button class="btn btn-primary"
+                  style="margin-left: 20px;"
+                  (click)="showAnswerDialog()"
+                  [disabled]="isAnswerDialog"
+                  *ngIf="!isAnswerDialog">Write Answer</button>
+        </div>
+
 
         <!--
           dialog to write an answer
@@ -70,9 +76,24 @@
 
         <hr/>
 
+
         <!-- some answers for this question -->
+        <h3 *ngIf="answers.length > 0">
+          Answers
+          <small>
+            <a *ngIf="onlyPreview && answers && answers.length > 1"
+               class="myLink"
+               (click)="showAllAnswers( true )"
+            >All answers</a>
+            <a *ngIf="!onlyPreview"
+               class="myLink"
+               (click)="showAllAnswers( false )"
+            >Only hottest answer</a>
+          </small>
+        </h3>
         <!-- show all answers -->
         <ng-container *ngIf="!onlyPreview && answers">
+
           <div class="row" *ngFor="let answer of answers">
 
             <!-- answerview -->
@@ -96,15 +117,28 @@
           </div>
         </ng-container>
 
+
         <!--
           Buttons to toggle the answer view (all answers or only the hottest one
         -->
+        <hr *ngIf="answers.length > 0" />
+        <div class="stats">
+          <a *ngIf="onlyPreview && answers && answers.length > 1"
+             class="myLink"
+             (click)="showAllAnswers( true )"
+          >All answers</a>
+          <a *ngIf="!onlyPreview"
+             class="myLink"
+             (click)="showAllAnswers( false )"
+          >Only hottest answer</a>
+        </div>
+        <!--
         <button type="button" class="btn btn-primary" (click)="showAllAnswers( false )" *ngIf="!onlyPreview">Show only hottest answer</button>
         <button type="button"
                 class="btn btn-primary"
                 (click)="showAllAnswers( true )"
                 *ngIf="onlyPreview"
-                [disabled]="answers.length <= 1">Show all Answers</button>
+                [disabled]="answers.length <= 1">Show all Answers</button> -->
       </div>
 
     </div>

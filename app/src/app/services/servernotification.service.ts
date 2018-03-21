@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {WebsocketService} from './websocket.service';
-import {Question, Answer, QuestionVoteRatioChanged, AnswerVoteRatioChanged,
-    QuestionTextContentChanged, AnswerTextChanged, Mood} from '../api/model/models';
+import {Question, QuestionVoteRatioChanged, AnswerVoteRatioChanged,
+    QuestionTextContentChanged, AnswerTextChanged} from '../api/model/models';
 import {Moodchanged} from '../api/model/moodchanged';
+import {NewAnswer} from '../api/model/newanswer';
 
 @Injectable()
 export class ServerNotificationService extends WebsocketService {
@@ -22,9 +23,9 @@ export class ServerNotificationService extends WebsocketService {
         });
     }
 
-    public onNewAnswer(): Observable<Answer> {
-        return new Observable<Answer>(observer => {
-            this.socket.on(this.onNewAnswerTopic, (data: Answer) => observer.next(data));
+    public onNewAnswer(): Observable<NewAnswer> {
+        return new Observable<NewAnswer>(observer => {
+            this.socket.on(this.onNewAnswerTopic, (data: NewAnswer) => observer.next(data));
         });
     }
 

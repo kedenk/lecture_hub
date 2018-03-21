@@ -25,7 +25,9 @@
             <ngx-loading [show]="isAnswerUpdateSending"></ngx-loading>
 
             <textarea class="form-control" [(ngModel)]="changedAnswerContent" title="Textarea to update this answer."></textarea>
-            <button type="button" class="btn btn-primary" (click)="sendAnswerUpdate( answer )">Update</button>
+            <small>Answer must be at minimum {{minAnswerTextLength}} character long.</small>
+            <br/>
+            <button type="button" class="btn btn-primary" (click)="sendAnswerUpdate( answer )" [disabled]="!changedAnswerValid()">Update</button>
             <button type="button" class="btn btn-danger" (click)="closeUpdateAnswerDialog()">Abort</button>
         </ng-container>
         <hr/>
