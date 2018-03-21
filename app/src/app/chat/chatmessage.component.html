@@ -1,7 +1,14 @@
-
+<!--
+    Template for a chat message
+-->
 <div class="alert chatmessage" [ngClass]="(isUserAuthor()) ? 'alert-success pull-right' : 'alert-info'" >
 
     <span>
+        <!--
+            Different names are displayed depending on the user.
+            If the current user is the author of this message, "You" is written instead
+            of the actual user name.
+        -->
         <ng-container *ngIf="isUserAuthor(); else usernameContainer">
             <strong>You</strong>
         </ng-container>
@@ -9,9 +16,13 @@
         <ng-template #usernameContainer>
             <strong>{{chatMessage.username}}</strong>
         </ng-template>
+
+        <!-- date of arrival time -->
         {{chatMessage.date | date:'dd.MM.yyyy HH:mm:ss' }}
     </span>
     <br/>
+
+    <!-- the chat message -->
     <span>{{chatMessage.message}}</span>
     
 </div>

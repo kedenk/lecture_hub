@@ -169,8 +169,11 @@ exports.postMoodForLecture = function(lectureID,body) {
                                     if( error ) { reject(error); }
                                     else {
 
-
-                                        resolve(buildMoodList( searchResult ));
+                                        if( result.rowCount > 0 ) {
+                                            resolve(buildMoodObject(result.rows[0]));
+                                        } else {
+                                            reject('Cant fetch new created mood');
+                                        }
                                     }
                                   });
                           }
@@ -189,7 +192,7 @@ exports.checkLectureId = function(lectureID) {
 
         dbPool.selectByKey('lecture', 'lectureid', lectureID)
             .then( res => {
-                console.log(res);
+
                 if( res.rowCount === 0 ) {
                     reject('Lecture not found');
                 }
@@ -206,7 +209,7 @@ exports.checkLectureId = function(lectureID) {
  * @returns {*}
  */
 function buildMoodObject( row ) {
-
+console.log(row);
     return new Mood( row.lectureid, row.positive, row.negative, row.neutral );
 }
 

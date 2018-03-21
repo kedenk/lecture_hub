@@ -1,7 +1,10 @@
-
+<!--
+    Template for the lecture page
+-->
 <div class="main-content">
 
     <div class="container-fluid">
+
         <!-- Common Lecture informations -->
         <div class="row">
             <div class="col-md-8">
@@ -27,29 +30,29 @@
                     <div class="content">
                         <div class="row">
                             <!-- Positive mood icon -->
-                            <div class="col-md-4 text-center">
+                            <div class="col-md-4 col-xs-4 col-lg-4 text-center">
                                 <img src="/assets/img/positive_smiley.png"
                                      (click)="sendMood( 1 )"
                                      class="img-fluid mood-icon"
-                                     [style.width.%]="moodPosIconSize"
+                                     [style.width.px]="moodPosIconSize"
                                      [ngClass]="{'mood-icon-selected': userLectureMood === 1}"
                                 >
                             </div>
                             <!-- Neutral mood icon -->
-                            <div class="col-md-4 text-center">
+                            <div class="col-md-4 col-xs-4 col-lg-4 text-center">
                                 <img src="/assets/img/neutral_smiley.png"
                                      (click)="sendMood( 0 )"
                                      class="img-fluid mood-icon"
-                                     [style.width.%]="moodNeutIconSize"
+                                     [style.width.px]="moodNeutIconSize"
                                      [ngClass]="{'mood-icon-selected': userLectureMood === 0}"
                                 >
                             </div>
                             <!-- Negative mood icon -->
-                            <div class="col-md-4 text-center">
+                            <div class="col-md-4 col-xs-4 col-lg-4 text-center">
                                 <img src="/assets/img/negative_smiley.png"
                                      (click)="sendMood( -1 )"
                                      class="img-fluid mood-icon"
-                                     [style.width.%]="moodNegIconSize"
+                                     [style.width.px]="moodNegIconSize"
                                      [ngClass]="{'mood-icon-selected': userLectureMood === -1}"
                                 >
                             </div>
@@ -71,7 +74,9 @@
 
         <div class="row">
 
-            <!-- Div for the chat -->
+            <!--
+                Div for the chat
+            -->
             <div class="col-md-6 chat-container">
                 <app-chat [(lecture)]="lecture"></app-chat>
             </div>
@@ -94,7 +99,9 @@
             </div>
         </div>
 
-        <!-- Div for the question answer section -->
+        <!--
+            Div for the question answer section
+         -->
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -104,19 +111,27 @@
                         <p class="category">Here you can ask questions related to this course. The questions are ordered by their rating.
                             The hottest ones are the first. </p>
 
+                        <!--
+                            button to show dialog to write a new question
+                        -->
                         <button class="btn btn-primary" (click)="showNewQuestionDialog()" *ngIf="!isQuestionDialog">Ask Question</button>
 
                     </div>
 
                     <div class="content">
-                        <!-- new question -->
+
+                        <!--
+                            new question
+                        -->
                         <div class="row newQuestionDialogDiv" *ngIf="isQuestionDialog">
                             <ngx-loading [show]="isQuestionAdding"></ngx-loading>
 
                             <hr/>
                             <textarea type="text" class="form-control" [(ngModel)]="newQuestionContent" placeholder="Type your question..." minlength="50"></textarea>
+                            <small>Question must be at minimum {{minQuestionContentLength}} character long.</small>
                             <br/>
-                            <button type="button" class="btn btn-primary" (click)="sendNewQuestion()">Ask Question</button>
+                            <!-- buttons to send or abort new question -->
+                            <button type="button" class="btn btn-primary" (click)="sendNewQuestion()" [disabled]="!newQuestionValid()">Ask Question</button>
                             <button type="button" class="btn btn-danger" (click)="closeNewQuestionDialog()">Abort</button>
 
                             <hr/>

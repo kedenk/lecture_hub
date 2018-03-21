@@ -43,12 +43,8 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
     private isAnswerDialog: boolean = false;
     private isAnswerSending: boolean = false;
     private isUpdateDialog: boolean = false;
-    private isUpdateSending: boolean = false;
-
-
 
     private changedQuestionContent: string = '';
-
 
     private onNewAnswerSubscription: Subscription;
     private onAnswerTextChangedSubscription: Subscription;
@@ -68,12 +64,14 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
         if ( questionIDParam !== undefined ) {
 
+            // get the question to visualize
             this.questionService.getQuestionsByQuestionID( questionIDParam, this.getCurrentUserID() ).subscribe(
                 question => {
                     // load question and answers afterwards
                     this.question = question;
                     this.isLoading = false;
 
+                    // get the answers for this question
                     this.getAnswers();
                 },
                 error => {
@@ -90,6 +88,9 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
             this.getAnswers();
         }
 
+        //
+        // Websocket subscriptions
+        //
         this.onNewAnswerSubscription = this.serverNotiService.onNewAnswer().subscribe(
             newAnswer => this.addNewAnswer( newAnswer )
         );
@@ -102,6 +103,9 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
         );
     }
 
+    /***
+     * Cleanup on destroy
+     */
     ngOnDestroy(): void {
 
         if ( this.onNewAnswerSubscription !== undefined ) {
@@ -119,7 +123,6 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
     set setQuestion( question: Question ) {
         this.question = question;
     }
-
 
     /***
      * Load all answers for this question
@@ -180,7 +183,9 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
             this.answers.forEach(
                 answer => {
                     // not nice but not patience anymore :D
-                    if (answer.answerID === parseInt(changedAnswer.answerID.toString(), 10)) {
+                    if (answer.answerID === parseInt(changedAnswer.answerID.toString(), 10) &&
+                        answer.textContent !== changedAnswer.textContent) {
+
                         answer.textContent = changedAnswer.textContent;
 
                         this.serverUpdateUIInfo('The content of an answer has changed.');
@@ -364,7 +369,6 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
                 data => {
 
                     // add new answer to answers
-                    this.addNewAnswer( data );
                     this.isAnswerSending = false;
                     this.closeNewAnswerDialog();
 
@@ -436,5 +440,14 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
     showAllAnswers( show: boolean ): void {
         this.onlyPreview = !show;
+    }
+
+    newAnswerValid(): boolean {
+
+        if( this.newAnswerTextContent ) {
+            return this.newAnswerTextContent.length > this.minAnswerLength;
+        } else {
+            false;
+        }
     }
 }

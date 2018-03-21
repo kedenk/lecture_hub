@@ -23,7 +23,6 @@ var OnReceiveMessage = function(lectureID, username, message) {
 
 module.exports = function( io ) {
 
-    console.log( io );
     if( io !== undefined ) {
         socketio = io;
     }

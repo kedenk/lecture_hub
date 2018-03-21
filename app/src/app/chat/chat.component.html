@@ -1,5 +1,6 @@
-
-
+<!--
+    Template for a chat section
+-->
 <div class="card">
     <div class="header">
         <h4 class="title">Chat</h4>
@@ -8,12 +9,18 @@
 
     <div class="content">
 
-        <div class="chat-message-container">
+        <!--
+            Chat message div to visualize the chat messages
+        -->
+        <div class="chat-message-container" #autoBottomScroll [scrollTop]="autoBottomScroll.scrollHeight">
             <div class="row message-row" *ngFor="let msg of messages">
                <app-chat-message [chatMessage]="msg"></app-chat-message>
             </div>
         </div>
 
+        <!--
+            Form to write and submit chat messages
+        -->
         <form class="form-inline " [formGroup]="chatForm" (ngSubmit)="onChatMessageSubmit()" novalidate>
             <div class="form-group chat-form-div">
                 <input type="text" class="form-control chat-input-field" formControlName="chatMessage" autocomplete="off" placeholder="Your message..." required />

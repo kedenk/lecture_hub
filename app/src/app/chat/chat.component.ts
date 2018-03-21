@@ -3,7 +3,7 @@ import {Lecture} from '../api/model/lecture';
 import {UserService} from '../services/user.service';
 import {Student, ChatMessageRec} from '../api/model/models';
 import {ChatService} from '../services/chat.service';
-import {FormGroup, Validators, FormControl} from '@angular/forms';
+import {FormGroup, FormControl} from '@angular/forms';
 import {Subscription} from 'rxjs/Subscription';
 
 @Component({
@@ -28,6 +28,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
 
+        // get current user
         this.currentStudent = this.userService.getCurrentUser();
         if ( this.currentStudent === undefined ) {
             console.error('Cant get user. Something is wrong');
@@ -37,10 +38,12 @@ export class ChatComponent implements OnInit, OnDestroy {
             this.chatService.registerChat(this.lecture.lectureID, this.currentStudent.studentID);
         }
 
+        // init chat form
         this.chatForm = new FormGroup({
             chatMessage: new FormControl()
         });
 
+        // subscribe to new chat messages
         this.chatMessageSubscription = this.chatService.onMessage().subscribe(
             msg => {
 
@@ -67,7 +70,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         this.chatService.closeSocket();
     }
 
-    addChatMessage( message: ChatMessageRec ): void {
+    /***
+     * Add a chat message to the message container
+     * @param {ChatMessageRec} message
+     */
+    private addChatMessage( message: ChatMessageRec ): void {
 
         this.messages.push(message);
     }
@@ -75,7 +82,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     /***
      * Send chat message to server
      */
-    onChatMessageSubmit(): void {
+    private onChatMessageSubmit(): void {
 
         if ( this.chatForm.valid ) {
             // webservice

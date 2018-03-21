@@ -30,7 +30,11 @@ export class LectureComponent implements OnInit, OnDestroy {
     moodErrorMessage: string;
     userLectureMood: number = -5;
 
-    moodResizeMultiplicator: number = 5;
+    moodResizeMultiplicator: number = 2;
+    /***
+     * Icon size in percentage
+     */
+    moodIconStdSize: number = 50;
     moodPosIconSize: number = 50;
     moodNeutIconSize: number = 50;
     moodNegIconSize: number = 50;
@@ -67,7 +71,13 @@ export class LectureComponent implements OnInit, OnDestroy {
 
         this.serverNotiService.initSocket();
         this.moodUpdateSubscription = this.serverNotiService.onMoodChanged().subscribe(data => {
-            this.mood = data;
+
+            // websockets sends different format than class mood is -> decode it to correct class
+            this.mood = new Mood();
+            this.mood.lectureID = data.lectureID;
+            this.mood.positive = data.mood.positive;
+            this.mood.neutral = data.mood.neutral;
+            this.mood.negative = data.mood.negative;
             this.updateMoodIcons();
             this.setLastMoodUpdateTime();
         });
@@ -182,12 +192,15 @@ export class LectureComponent implements OnInit, OnDestroy {
         );
     }
 
+    /***
+     * Updates the mood icon size depending on the current lecture mood
+     */
     updateMoodIcons(): void {
 
         if( this.mood ) {
-            this.moodPosIconSize = this.moodPosIconSize + (this.mood.positive * this.moodResizeMultiplicator);
-            this.moodNeutIconSize = this.moodNeutIconSize + (this.mood.neutral * this.moodResizeMultiplicator);
-            this.moodNegIconSize = this.moodNegIconSize + (this.mood.negative * this.moodResizeMultiplicator);
+            this.moodPosIconSize = this.moodIconStdSize + (this.mood.positive * this.moodResizeMultiplicator);
+            this.moodNeutIconSize = this.moodIconStdSize + (this.mood.neutral * this.moodResizeMultiplicator);
+            this.moodNegIconSize = this.moodIconStdSize + (this.mood.negative * this.moodResizeMultiplicator);
         }
     }
 
@@ -242,6 +255,20 @@ export class LectureComponent implements OnInit, OnDestroy {
                 NotificationAlign.center,
                 NotificationTypes.warning,
                 'Question should not be empty and the text longer than ' + this.minQuestionContentLength + ' characters.');
+        }
+    }
+
+
+    /***
+     * Checks, if new question is valid
+     * @returns {boolean}
+     */
+    newQuestionValid(): boolean {
+
+        if( this.newQuestionContent ) {
+            return this.newQuestionContent.length > this.minQuestionContentLength;
+        } else {
+            false;
         }
     }
 }

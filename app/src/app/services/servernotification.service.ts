@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {WebsocketService} from './websocket.service';
 import {Question, Answer, QuestionVoteRatioChanged, AnswerVoteRatioChanged,
     QuestionTextContentChanged, AnswerTextChanged, Mood} from '../api/model/models';
+import {Moodchanged} from '../api/model/moodchanged';
 
 @Injectable()
 export class ServerNotificationService extends WebsocketService {
@@ -51,9 +52,9 @@ export class ServerNotificationService extends WebsocketService {
         });
     }
 
-    public onMoodChanged(): Observable<Mood> {
-        return new Observable<Mood>(observer => {
-            this.socket.on(this.onMoodChangedTopic, (data: Mood) => observer.next(data));
+    public onMoodChanged(): Observable<Moodchanged> {
+        return new Observable<Moodchanged>(observer => {
+            this.socket.on(this.onMoodChangedTopic, (data: Moodchanged) => observer.next(data));
         });
     }
 }

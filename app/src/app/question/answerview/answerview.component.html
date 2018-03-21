@@ -1,6 +1,6 @@
 
 
-<div class="col-md-1 text-center rateDiv">
+<div class="col-md-1 col-xs-1 col-lg-1 text-center rateDiv">
 
     <!-- to visualize vote loading during processing -->
     <ngx-loading [show]="isAnswerVotingLoading"></ngx-loading>
@@ -12,8 +12,8 @@
     <span class="glyphicon glyphicon-chevron-down glyphicon-large glyphicon-vote" (click)="onAnswerDownvote(answer)" [ngClass]="{voted: answer.studentVote == -1}"></span>
 </div>
 
-<div class="col-md-11">
-    <div class="card">
+<div class="col-md-11 col-xs-11 col-lg-11">
+    <div class="card answerCard">
         <div class="content">
         <ng-container *ngIf="!isUpdateAnswerDialog">
             {{answer.textContent}}
@@ -35,6 +35,5 @@
         </div>
         </div>
     </div>
-    <br/>
 
 </div>

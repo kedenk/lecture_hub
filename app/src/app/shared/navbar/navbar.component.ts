@@ -1,8 +1,9 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { ROUTES } from '../../sidebar/sidebar.component';
-import {Location, LocationStrategy, PathLocationStrategy} from '@angular/common';
+import {Location} from '@angular/common';
 import {UserService} from '../../services/user.service';
 import {Router} from '@angular/router';
+import {Student} from '../../api/model/student';
 
 @Component({
     // moduleId: module.id,
@@ -17,6 +18,8 @@ export class NavbarComponent implements OnInit {
     private toggleButton: any;
     private sidebarVisible: boolean;
 
+    private currentUser: Student;
+
     constructor(location: Location,
                 private element: ElementRef,
                 private userService: UserService,
@@ -29,7 +32,13 @@ export class NavbarComponent implements OnInit {
       this.listTitles = ROUTES.filter(listTitle => listTitle);
       const navbar: HTMLElement = this.element.nativeElement;
       this.toggleButton = navbar.getElementsByClassName('navbar-toggle')[0];
+
+      this.currentUser = this.userService.getCurrentUser();
+
+      this.userService.userLogin$.subscribe(user => this.currentUser = user );
+      this.userService.userLogout$.subscribe( bool => this.currentUser = undefined )
     }
+
     sidebarOpen() {
         const toggleButton = this.toggleButton;
         const body = document.getElementsByTagName('body')[0];
@@ -39,13 +48,15 @@ export class NavbarComponent implements OnInit {
         body.classList.add('nav-open');
 
         this.sidebarVisible = true;
-    };
+    }
+
     sidebarClose() {
         const body = document.getElementsByTagName('body')[0];
         this.toggleButton.classList.remove('toggled');
         this.sidebarVisible = false;
         body.classList.remove('nav-open');
-    };
+    }
+
     sidebarToggle() {
         // const toggleButton = this.toggleButton;
         // const body = document.getElementsByTagName('body')[0];
@@ -54,7 +65,7 @@ export class NavbarComponent implements OnInit {
         } else {
             this.sidebarClose();
         }
-    };
+    }
 
     getTitle(){
       var titlee = this.location.prepareExternalUrl(this.location.path());
@@ -70,5 +81,9 @@ export class NavbarComponent implements OnInit {
     logout(): void {
         this.userService.logout();
         this.route.navigate(['/']);
+    }
+
+    directToUserProfile(): void {
+        this.route.navigate( ['/user'] );
     }
 }

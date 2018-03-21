@@ -23,9 +23,14 @@ export class ChatMessageComponent implements OnInit {
             throw new Error('Something went wrong. No chatmessage provided.');
         }
 
+        // get current user from user service
         this.currentUser = this.userService.getCurrentUser();
     }
 
+    /***
+     * Checks, if the current user is the author of the chat message
+     * @returns {boolean}
+     */
     isUserAuthor(): boolean {
         return this.currentUser.username === this.chatMessage.username;
     }

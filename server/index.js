@@ -1,7 +1,8 @@
 var logger = require('./src/utils/LogFactory').getLogger();
 var express = require('express');
 
-const port = 5300;
+const appport = 5300;
+const socketport = 3000;
 const app = express();
 var router = express.Router();
 
@@ -16,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(cors());
 
-app.listen(port);
+app.listen(appport);
 
 //
 // define and start routes
@@ -31,11 +32,11 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var socket = require('./src/websocket/sockets');
 socket(io);
-http.listen(3000, function() {
-    console.log('websocket listening on port ' + 3000);
+http.listen(socketport, function() {
+    console.log('websocket listening on port ' + socketport);
 })
 
 
-logger.info("Server started. Listen on port " + port)
+logger.info("Server started. Listen on port " + appport)
 
 logger.warn("Still in dev mode!");

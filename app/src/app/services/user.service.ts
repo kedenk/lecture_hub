@@ -2,12 +2,21 @@ import { Injectable } from '@angular/core';
 import {CookieService} from 'ngx-cookie-service';
 import {StudentService, Student} from '../api/index';
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class UserService {
 
-    cookieStudentId = 'userid';
-    cookieStudentName = 'username';
+    private cookieStudentId = 'userid';
+    private cookieStudentName = 'username';
+
+    // Observable sources
+    private userLoginSource = new Subject<Student>();
+    private userLogoutSource = new Subject<boolean>();
+
+    // Observable string streams
+    userLogin$ = this.userLoginSource.asObservable();
+    userLogout$ = this.userLogoutSource.asObservable();
 
     constructor(
         private cookieService: CookieService,
@@ -31,29 +40,34 @@ export class UserService {
     }
 
     public logout(): void {
-        console.log("logout");
+        console.log('logout');
         this.cookieService.delete(this.cookieStudentId);
         this.cookieService.delete(this.cookieStudentName);
+
+        this.onUserLogout();
     }
 
     public login(username: string): Observable<Student> {
 
-        console.log("All cookies");
+        console.log('All cookies');
         console.log(this.cookieService.getAll());
         let currentUser = this.checkUsername( username );
         if ( currentUser === null ) {
 
-            console.log("user not in cookie");
-            console.log("create new");
+            console.log('user not in cookie');
+            console.log('create new');
 
             let newStudent: Student = new Student();
             newStudent.username = username;
             this.studentService.addStudent( newStudent ).subscribe(
                 data => {
-                    console.log( "new user" );
+                    console.log( 'new user' );
                     console.log( data );
                     currentUser = data;
                     this.setStudentCookie( currentUser );
+
+                    // invoke userlogin event
+                    this.onUserLogin( currentUser );
 
                     return new Observable<Student>((observer) => {
                         observer.next(currentUser);
@@ -61,14 +75,17 @@ export class UserService {
                     });
                 },
                 error => {
-                    console.error("Can't add student");
-                    new Error("No Server connection.");
+                    console.error('Can\'t add student');
+                    new Error('No Server connection.');
                 }
             );
 
         } else {
 
-            console.log("user in cookies");
+            console.log('user in cookies');
+
+            // invoke userlogin event
+            this.onUserLogin( currentUser );
 
             return new Observable<Student>((observer) => {
                 observer.next(currentUser);
@@ -79,7 +96,7 @@ export class UserService {
 
     private setStudentCookie( student: Student ): void {
 
-        console.log("Set cookie: ", student);
+        console.log('Set cookie: ', student);
         this.cookieService.set( this.cookieStudentId, student.studentID, 2147483647);
         this.cookieService.set( this.cookieStudentName, student.username, 2147483647);
     }
@@ -106,5 +123,22 @@ export class UserService {
         } else {
             return null;
         }
+    }
+
+    /***
+     * Emits an event that a user logged in
+     * @param {Student} student
+     */
+    private onUserLogin( student: Student ): void {
+
+        this.userLoginSource.next( student );
+    }
+
+    /***
+     * Emits an event that a user logged out
+     */
+    private onUserLogout(): void {
+
+        this.userLogoutSource.next( true );
     }
 }
