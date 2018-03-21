@@ -1,7 +1,16 @@
 
-<div class="alert chatmessage" [ngClass]="(currentUser.username == chatMessage.username) ? 'alert-success pull-right' : 'alert-info'" >
+<div class="alert chatmessage" [ngClass]="(isUserAuthor()) ? 'alert-success pull-right' : 'alert-info'" >
 
-    <span><strong>{{chatMessage.username}}</strong> {{chatMessage.date | date:'dd.MM.yyyy HH:mm:ss' }}</span>
+    <span>
+        <ng-container *ngIf="isUserAuthor(); else usernameContainer">
+            <strong>You</strong>
+        </ng-container>
+
+        <ng-template #usernameContainer>
+            <strong>{{chatMessage.username}}</strong>
+        </ng-template>
+        {{chatMessage.date | date:'dd.MM.yyyy HH:mm:ss' }}
+    </span>
     <br/>
     <span>{{chatMessage.message}}</span>
     

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Student} from '../api/model/student';
+import {UserService} from '../services/user.service';
 
 @Component({
   selector: 'app-user',
@@ -7,9 +9,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserComponent implements OnInit {
 
-  constructor() { }
+  currentUser: Student;
+
+  firstname: string;
+  lastname: string;
+  email: string;
+
+  constructor(
+      private userService: UserService
+  ) { }
 
   ngOnInit() {
+
+    this.currentUser = this.userService.getCurrentUser();
+    console.log(this.currentUser);
   }
 
 }

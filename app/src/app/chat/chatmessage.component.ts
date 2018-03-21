@@ -26,4 +26,7 @@ export class ChatMessageComponent implements OnInit {
         this.currentUser = this.userService.getCurrentUser();
     }
 
+    isUserAuthor(): boolean {
+        return this.currentUser.username === this.chatMessage.username;
+    }
 }
