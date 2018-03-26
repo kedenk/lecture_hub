@@ -13,8 +13,6 @@ import { AppComponent } from './app.component';
 
 import { HomeComponent } from './home/home.component';
 import { UserComponent } from './user/user.component';
-import { TypographyComponent } from './typography/typography.component';
-import { NotificationsComponent } from './notifications/notifications.component';
 import {UserService} from './services/user.service';
 import {UinotificationService} from './services/uinotification.service';
 import {CookieService} from 'ngx-cookie-service';
@@ -40,8 +38,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     AppComponent,
     HomeComponent,
     UserComponent,
-    TypographyComponent,
-    NotificationsComponent,
     ChatComponent,
     ChatMessageComponent,
     LectureComponent,
