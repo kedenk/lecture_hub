@@ -8,11 +8,12 @@ import {
 } from '../services/uinotification.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ServerNotificationService} from '../services/servernotification.service';
+import {trigger, state, style, animate, transition} from '@angular/animations';
 
 @Component({
     selector: 'app-questionoverview',
     templateUrl: './questionoverview.component.html',
-    styleUrls: ['./questionoverview.component.css']
+    styleUrls: ['./questionoverview.component.css'],
 })
 export class QuestionoverviewComponent implements OnInit, OnDestroy {
 
@@ -70,7 +71,6 @@ export class QuestionoverviewComponent implements OnInit, OnDestroy {
         }
     }
 
-
     /***
      * Get all questions for this lecture from the server
      */
@@ -97,11 +97,11 @@ export class QuestionoverviewComponent implements OnInit, OnDestroy {
      */
     private addNewQuestion( question: Question ): void {
 
-        if( this.questions === undefined ) {
+        if ( this.questions === undefined ) {
             this.questions = [];
         }
 
-        if( question !== undefined ) {
+        if ( question !== undefined ) {
             this.questions.push(question);
             this.sortQuestions();
 
@@ -116,7 +116,7 @@ export class QuestionoverviewComponent implements OnInit, OnDestroy {
      */
     private updateQuestionContent( questionUpdate: QuestionTextContentChanged ) {
 
-        if( questionUpdate !== undefined ) {
+        if ( questionUpdate !== undefined ) {
 
             this.questions.forEach(
                 question => {
@@ -137,7 +137,7 @@ export class QuestionoverviewComponent implements OnInit, OnDestroy {
      */
     private updateQuestionVotes( voteUpdate: QuestionVoteRatioChanged ) {
 
-        if( voteUpdate !== undefined ) {
+        if ( voteUpdate !== undefined ) {
 
             this.questions.forEach(
                 question => {

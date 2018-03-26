@@ -9,11 +9,11 @@ export class NewAnswer {
 
     questionID?: number;
     /**
-     * The answer itself
+     * The _answer itself
      */
     textContent?: string;
     /**
-     * Number of all upvotes for this answer subtracted by the number of downvotes
+     * Number of all upvotes for this _answer subtracted by the number of downvotes
      */
     voteRatio?: number;
     /**

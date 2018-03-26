@@ -18,20 +18,21 @@ import { NotificationsComponent } from './notifications/notifications.component'
 import {UserService} from './services/user.service';
 import {UinotificationService} from './services/uinotification.service';
 import {CookieService} from 'ngx-cookie-service';
-import {HttpClientModule} from "@angular/common/http";
-import {ChatService} from "./services/chat.service";
-import {ServerNotificationService} from "./services/servernotification.service";
-import {WebsocketService} from "./services/websocket.service";
+import {HttpClientModule} from '@angular/common/http';
+import {ChatService} from './services/chat.service';
+import {ServerNotificationService} from './services/servernotification.service';
+import {WebsocketService} from './services/websocket.service';
 import {ChatComponent} from './chat/chat.component';
 import {LoadingModule, ANIMATION_TYPES} from 'ngx-loading';
 import {LectureService, QuestionService, MoodService, AnswerService, StudentService} from './api/api/api';
-import {LectureComponent} from "./lecture/lecture.component";
-import {ChatMessageComponent} from "./chat/chatmessage.component";
-import {DatePipe} from "@angular/common";
-import {TextpreviewPipe} from "./pipes/textpreview.pipe";
-import {QuestionoverviewComponent} from "./question/questionoverview.component";
+import {LectureComponent} from './lecture/lecture.component';
+import {ChatMessageComponent} from './chat/chatmessage.component';
+import {DatePipe} from '@angular/common';
+import {TextpreviewPipe} from './pipes/textpreview.pipe';
+import {QuestionoverviewComponent} from './question/questionoverview.component';
 import { QuestionviewComponent } from './question/questionview/questionview.component';
 import { AnswerviewComponent } from './question/answerview/answerview.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import { AnswerviewComponent } from './question/answerview/answerview.component'
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     HttpModule,
     HttpClientModule,

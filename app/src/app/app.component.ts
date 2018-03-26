@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { LocationStrategy, PlatformLocation, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import {UserService} from './services/user.service';
-import {Student} from './api/index';
-import {UinotificationService, NotificationTypes, NotificationAlign, NotificationPosition} from "./services/uinotification.service";
-import {FormGroup, FormControl} from "@angular/forms";
+import {UinotificationService, NotificationTypes, NotificationAlign, NotificationPosition} from './services/uinotification.service';
+import {FormGroup, FormControl} from '@angular/forms';
 
 
 @Component({
@@ -52,16 +51,16 @@ export class AppComponent implements OnInit {
             return;
         }
 
-        let username: string = this.loginForm.value.username.toString();
-        console.log("Username is: ", username);
+        const username: string = this.loginForm.value.username.toString();
+
         this.userService.login( username ).subscribe(
             data => {
-                console.log("Lodded in: ", data);
+
                 this.notiService.showNotification(
                     NotificationPosition.top,
                     NotificationAlign.center,
                     NotificationTypes.warning,
-                    'Hello ' + data.username + ". You are logged in now!");
+                    'Hello ' + data.username + '. You are logged in now!');
 
                 this.loginErrorMessage = '';
             },

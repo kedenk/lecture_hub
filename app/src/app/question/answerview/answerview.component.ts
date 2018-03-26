@@ -33,15 +33,15 @@ export class AnswerviewComponent {
     @Output()
     onAnswerTextChanged: EventEmitter<AnswerTextChanged> = new EventEmitter<AnswerTextChanged>();
 
-    private isAnswerVotingLoading: boolean = false;
-    private isAnswerUpdateSending: boolean = false;
+    private isAnswerVotingLoading = false;
+    private isAnswerUpdateSending = false;
 
     /***
      * Variables for answer change dialog
      */
-    private changedAnswerContent: string = '';
-    private minAnswerTextLength: number = 10;
-    private isUpdateAnswerDialog: boolean = false;
+    private changedAnswerContent = '';
+    private minAnswerTextLength = 10;
+    private isUpdateAnswerDialog = false;
 
     constructor(
       private userService: UserService,
@@ -49,13 +49,12 @@ export class AnswerviewComponent {
       private uiNotiService: UinotificationService
     ) { }
 
-
     /***
      * Triggers the output event <code>onAnswerVoteChanged</code>
      * @param {Answer} answer
      */
     answerVoteChanged( answer: Answer ): void {
-        if( answer !== undefined ) {
+        if ( answer !== undefined ) {
             this.onAnswerVoteChanged.emit(answer);
         }
     }
@@ -65,7 +64,7 @@ export class AnswerviewComponent {
      * @param {Answer} answer
      */
     answerTextContentChanged( changedAnswer: AnswerTextChanged ): void {
-        if( changedAnswer !== undefined ) {
+        if ( changedAnswer !== undefined ) {
             this.onAnswerTextChanged.emit( changedAnswer );
         }
     }
@@ -97,9 +96,9 @@ export class AnswerviewComponent {
       if (!this.isAnswerVotingLoading && answer !== undefined) {
           this.isAnswerVotingLoading = true;
 
-          let b = new Body5();
+          const b = new Body5();
           b.vote = vote;
-          b.studentID = parseInt(this.userService.getCurrentUser().studentID);
+          b.studentID = parseInt(this.userService.getCurrentUser().studentID, 10);
 
           this.answerService.voteAnswer(answer.answerID, b).subscribe(
               data => {
@@ -119,7 +118,7 @@ export class AnswerviewComponent {
                   console.log(error);
                   let msg = 'Unknown error. Please try again later.';
 
-                  switch(error.status) {
+                  switch (error.status) {
                       case 405: msg = 'You already voted for this answer';
                           break;
                       case 403: msg = 'The studentID is invalid.';
@@ -147,14 +146,14 @@ export class AnswerviewComponent {
     sendAnswerUpdate( answer: Answer ) {
 
         this.isAnswerUpdateSending = true;
-        let b: Body4 = new Body4();
+        const b: Body4 = new Body4();
         b.studentID = parseInt(this.userService.getCurrentUserId(), 10);
         b.textContent = this.changedAnswerContent;
 
         this.answerService.updateAnswer( answer.answerID, b ).subscribe(
             data => {
 
-                let a: AnswerTextChanged = new AnswerTextChanged();
+                const a: AnswerTextChanged = new AnswerTextChanged();
                 a.answerID = data.answerID;
                 a.textContent = data.textContent;
                 this.answerTextContentChanged( a );
@@ -186,16 +185,16 @@ export class AnswerviewComponent {
      */
     isAnswerAuthor( answer: Answer ): boolean {
 
-        let answerAuthor: number = parseInt(answer.author.studentID, 10);
+        const answerAuthor: number = parseInt(answer.author.studentID, 10);
         return parseInt(this.userService.getCurrentUser().studentID, 10) === answerAuthor;
     }
 
     changedAnswerValid(): boolean {
 
-        if( this.changedAnswerContent ) {
+        if ( this.changedAnswerContent ) {
             return this.changedAnswerContent.length > this.minAnswerTextLength;
         } else {
-            false;
+            return false;
         }
     }
 }

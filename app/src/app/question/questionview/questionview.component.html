@@ -4,15 +4,20 @@
 
   <div class="col-md-1 col-xs-1 text-center rateDiv">
     <ngx-loading [show]="isVotingLoading"></ngx-loading>
-    <span class="glyphicon glyphicon-chevron-up glyphicon-large glyphicon-vote" (click)="onQuestionUpvote(question)" [ngClass]="{voted: question.studentVote == 1}"></span>
+    <span class="glyphicon glyphicon-chevron-up glyphicon-large glyphicon-vote"
+          (click)="onQuestionUpvote(question)"
+          [ngClass]="{voted: question.studentVote == 1}"></span>
     <strong><p class="voteRatioLabel" *ngIf="question.voteRatio">{{question.voteRatio}}</p></strong>
     <strong><p class="voteRatioLabel" *ngIf="!question.voteRatio">0</p></strong>
-    <span class="glyphicon glyphicon-chevron-down glyphicon-large glyphicon-vote" (click)="onQuestionDownvote(question)" [ngClass]="{voted: question.studentVote == -1}"></span>
+    <span class="glyphicon glyphicon-chevron-down glyphicon-large glyphicon-vote"
+          (click)="onQuestionDownvote(question)"
+          [ngClass]="{voted: question.studentVote == -1}"></span>
   </div>
 
 
   <div class="col-md-11 col-xs-11">
     <div class="card questionCard">
+
       <div class="header">
         <!--<h5 class="title"><strong>{{question.author.username}}</strong> asked:</h5>-->
       </div>
@@ -94,7 +99,8 @@
         <!-- show all answers -->
         <ng-container *ngIf="!onlyPreview && answers">
 
-          <div class="row" *ngFor="let answer of answers">
+          <div class="row" *ngFor="let answer of answers"
+               [@onAnswerChangedAnimation]="answerChangedState" (@onAnswerChangedAnimation.done)="endNotifyAnswerChanged()">
 
             <!-- answerview -->
             <app-answerview [answer]="answer"
@@ -107,7 +113,8 @@
 
         <!-- show only hottest answer -->
         <ng-container *ngIf="onlyPreview && answers && answers[0]">
-          <div class="row">
+          <div class="row"
+               [@onAnswerChangedAnimation]="answerChangedState" (@onAnswerChangedAnimation.done)="endNotifyAnswerChanged()">
 
             <app-answerview [answer]="answers[0]"
                             (onAnswerTextChanged)="changeAnswerText( event )"

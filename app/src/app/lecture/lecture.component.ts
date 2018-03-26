@@ -28,23 +28,23 @@ export class LectureComponent implements OnInit, OnDestroy {
     moodLastUpdate: Date;
     moodLastUpdateMessage: string;
     moodErrorMessage: string;
-    userLectureMood: number = -5;
+    userLectureMood = -5;
 
-    moodResizeMultiplicator: number = 2;
+    moodResizeMultiplicator = 2;
     /***
      * Icon size in percentage
      */
-    moodIconStdSize: number = 50;
-    moodPosIconSize: number = 50;
-    moodNeutIconSize: number = 50;
-    moodNegIconSize: number = 50;
+    moodIconStdSize = 50;
+    moodPosIconSize = 50;
+    moodNeutIconSize = 50;
+    moodNegIconSize = 50;
 
     moodUpdateSubscription: Subscription;
 
-    isQuestionDialog: boolean = false;
-    isQuestionAdding: boolean = false;
-    newQuestionContent: string = '';
-    minQuestionContentLength: number = 10;
+    isQuestionDialog = false;
+    isQuestionAdding = false;
+    newQuestionContent = '';
+    minQuestionContentLength = 10;
 
     public constructor(private route: ActivatedRoute,
                        private moodService: MoodService,
@@ -103,7 +103,7 @@ export class LectureComponent implements OnInit, OnDestroy {
         }
         this.moodIsLoading = true;
 
-        let b: Body = new Body();
+        const b: Body = new Body();
         b.studentID = parseInt(this.userService.getCurrentUser().studentID, 10);
         b.mood = value;
         this.moodService.postMoodForLecture( this.lecture.lectureID, b ).subscribe(
@@ -116,12 +116,12 @@ export class LectureComponent implements OnInit, OnDestroy {
             },
             error => {
                 console.error(error);
-                let msg: string = 'Unexpected error occurred. Please try again later.';
+                let msg = 'Unexpected error occurred. Please try again later.';
 
-                if( error.status === 404 ) {
+                if ( error.status === 404 ) {
                     msg = 'Lecture not found';
                 }
-                if( error.status === 403 ) {
+                if ( error.status === 403 ) {
                     msg = 'Invalid studentID';
                 }
 
@@ -140,7 +140,8 @@ export class LectureComponent implements OnInit, OnDestroy {
      */
     getStudentsMood(): void {
 
-        this.moodService.getMoodForStudentByLecture( this.lecture.lectureID, parseInt(this.userService.getCurrentUser().studentID, 10) ).subscribe(
+        this.moodService.getMoodForStudentByLecture( this.lecture.lectureID,
+            parseInt(this.userService.getCurrentUser().studentID, 10) ).subscribe(
             data => {
                 this.userLectureMood = data.mood;
             },
@@ -197,7 +198,7 @@ export class LectureComponent implements OnInit, OnDestroy {
      */
     updateMoodIcons(): void {
 
-        if( this.mood ) {
+        if ( this.mood ) {
             this.moodPosIconSize = this.moodIconStdSize + (this.mood.positive * this.moodResizeMultiplicator);
             this.moodNeutIconSize = this.moodIconStdSize + (this.mood.neutral * this.moodResizeMultiplicator);
             this.moodNegIconSize = this.moodIconStdSize + (this.mood.negative * this.moodResizeMultiplicator);
@@ -215,11 +216,11 @@ export class LectureComponent implements OnInit, OnDestroy {
 
     sendNewQuestion(): void {
 
-        if( this.newQuestionContent !== undefined && this.newQuestionContent.length > this.minQuestionContentLength ) {
+        if ( this.newQuestionContent !== undefined && this.newQuestionContent.length > this.minQuestionContentLength ) {
 
             this.isQuestionAdding = true;
 
-            let b: Body3 = new Body3();
+            const b: Body3 = new Body3();
             b.studentID = parseInt(this.userService.getCurrentUser().studentID, 10);
             b.textContent = this.newQuestionContent;
 
@@ -265,10 +266,10 @@ export class LectureComponent implements OnInit, OnDestroy {
      */
     newQuestionValid(): boolean {
 
-        if( this.newQuestionContent ) {
+        if ( this.newQuestionContent ) {
             return this.newQuestionContent.length > this.minQuestionContentLength;
         } else {
-            false;
+            return false;
         }
     }
 }

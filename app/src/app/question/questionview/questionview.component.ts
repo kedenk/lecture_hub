@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {Question} from '../../api/model/question';
 import {
     NotificationAlign, NotificationPosition, NotificationTypes,
@@ -6,7 +6,7 @@ import {
 } from '../../services/uinotification.service';
 import {Body2} from '../../api/model/body2';
 import {Body6} from '../../api/model/body6';
-import {AnswerService, Body5} from 'app/api';
+import {AnswerService} from 'app/api';
 import {QuestionService} from '../../api/api/question.service';
 import {UserService} from '../../services/user.service';
 import {Answer} from '../../api/model/answer';
@@ -16,40 +16,49 @@ import {ServerNotificationService} from '../../services/servernotification.servi
 import {Subscription} from 'rxjs/Subscription';
 import {AnswerTextChanged} from '../../api/model/answertextchanged';
 import {AnswerVoteRatioChanged} from '../../api/model/answervoteratechanged';
-import {Body4} from '../../api/model/body4';
 import {NewAnswer} from '../../api/model/newanswer';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-questionview',
   templateUrl: './questionview.component.html',
-  styleUrls: ['./questionview.component.css']
+  styleUrls: ['./questionview.component.css'],
+  animations: [
+      trigger('onAnswerChangedAnimation', [
+          state('show', style({ background: 'lime' })),
+          state('hide', style({ background: 'white' })),
+          transition( 'show <=> hide', animate('500ms'))
+      ])
+  ]
 })
 export class QuestionviewComponent implements OnInit, OnDestroy {
 
     @Input()
-    onlyPreview: boolean = false;
+    onlyPreview = false;
 
     private question: Question;
     private answers: Answer[] = [];
 
-    private newAnswerTextContent: string = '';
-    private minAnswerLength: number = 10;
-    private minQuestionText: number = 10;
+    private newAnswerTextContent = '';
+    private minAnswerLength = 10;
+    private minQuestionText = 10;
 
-    private isVotingLoading: boolean = false;
+    private isVotingLoading = false;
 
-    private isAnswerLoading: boolean = false;
-    private isLoading: boolean = false;
+    private isAnswerLoading = false;
+    private isLoading = false;
 
-    private isAnswerDialog: boolean = false;
-    private isAnswerSending: boolean = false;
-    private isUpdateDialog: boolean = false;
+    private isAnswerDialog = false;
+    private isAnswerSending = false;
+    private isUpdateDialog = false;
 
-    private changedQuestionContent: string = '';
+    private changedQuestionContent = '';
 
     private onNewAnswerSubscription: Subscription;
     private onAnswerTextChangedSubscription: Subscription;
     private onAnswerVoteChangedSubscription: Subscription;
+
+    private answerChangedState: string;
 
     constructor(private uiNotiService: UinotificationService,
               private userService: UserService,
@@ -60,7 +69,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
 
-        let questionIDParam = this.route.snapshot.queryParams.questionID;
+        const questionIDParam = this.route.snapshot.queryParams.questionID;
         this.isLoading = true;
 
         if ( questionIDParam !== undefined ) {
@@ -84,7 +93,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
                     this.isLoading = false;
                 }
-            )
+            );
         } else {
             this.getAnswers();
         }
@@ -126,6 +135,13 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
     }
 
     /***
+     * Methods for state change of animations
+     */
+    notifyAnswerChanged() { this.answerChangedState = 'show'; }
+    endNotifyAnswerChanged() { this.answerChangedState = 'hide'; }
+
+
+    /***
      * Load all answers for this question
      */
     getAnswers(): void {
@@ -160,7 +176,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
         }
 
         // check, if this answer is for this question
-        if( newAnswer.questionID !== this.question.questionID ) {
+        if ( newAnswer.questionID !== this.question.questionID ) {
             return;
         }
 
@@ -194,6 +210,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
                         answer.textContent = changedAnswer.textContent;
 
+                        this.notifyAnswerChanged();
                         this.serverUpdateUIInfo('The content of an answer has changed.');
                         return;
                     }
@@ -220,7 +237,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
                         return;
                     }
                 }
-            )
+            );
         }
     }
 
@@ -237,7 +254,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
     }
 
     getCurrentUserID(): number {
-        return parseInt(this.userService.getCurrentUser().studentID);
+        return parseInt(this.userService.getCurrentUser().studentID, 10);
     }
 
 
@@ -246,7 +263,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
      * @returns {boolean}
      */
     isAuthor(): boolean {
-        let questionAuthor: number = parseInt(this.question.author.studentID, 10);
+        const questionAuthor: number = parseInt(this.question.author.studentID, 10);
         return this.getCurrentUserID() === questionAuthor;
     }
 
@@ -300,9 +317,9 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
         if (!this.isVotingLoading && question !== undefined) {
             this.isVotingLoading = true;
 
-            let b = new Body2();
+            const b = new Body2();
             b.vote = vote;
-            b.studentID = parseInt(this.userService.getCurrentUser().studentID);
+            b.studentID = parseInt(this.userService.getCurrentUser().studentID, 10);
 
             this.questionService.voteQuestion(question.questionID, b).subscribe(
                 data => {
@@ -319,7 +336,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
                     console.log(error);
                     let msg = 'Unknown error. Please try again later.';
 
-                    switch(error.status) {
+                    switch (error.status) {
                         case 405: msg = 'You already voted for this question';
                             break;
                         case 403: msg = 'The studentID is invalid.';
@@ -365,7 +382,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
 
         if ( this.newAnswerTextContent !== undefined && this.newAnswerTextContent.length > this.minAnswerLength ) {
 
-            let b = new Body6();
+            const b = new Body6();
             b.textContent = this.newAnswerTextContent;
             b.studentID = this.getCurrentUserID();
 
@@ -392,7 +409,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
                         NotificationTypes.warning,
                         'A unexpected error occured. Please try again later.');
                 }
-            )
+            );
         } else {
 
             this.uiNotiService.showNotification(NotificationPosition.top,
@@ -413,7 +430,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
             this.isLoading = true;
 
             // send the question
-            let b = new Body1();
+            const b = new Body1();
             b.studentID = this.getCurrentUserID();
             b.textContent = this.changedQuestionContent;
             this.questionService.updateQuestion( this.question.questionID, b ).subscribe(
@@ -432,7 +449,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
                     console.error(error);
                     this.isLoading = false;
                 }
-            )
+            );
 
 
         } else {
@@ -455,10 +472,10 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
      */
     newAnswerValid(): boolean {
 
-        if( this.newAnswerTextContent ) {
+        if ( this.newAnswerTextContent ) {
             return this.newAnswerTextContent.length > this.minAnswerLength;
         } else {
-            false;
+            return false;
         }
     }
 
@@ -468,7 +485,7 @@ export class QuestionviewComponent implements OnInit, OnDestroy {
      */
     changedQuestionValid(): boolean {
 
-        if( this.changedQuestionContent ) {
+        if ( this.changedQuestionContent ) {
             return this.changedQuestionContent.length > this.minQuestionText;
         } else {
             return false;
