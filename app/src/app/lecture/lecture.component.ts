@@ -72,13 +72,17 @@ export class LectureComponent implements OnInit, OnDestroy {
         this.moodUpdateSubscription = this.serverNotiService.onMoodChanged().subscribe(data => {
 
             // websockets sends different format than class mood is -> decode it to correct class
-            this.mood = new Mood();
-            this.mood.lectureID = data.lectureID;
-            this.mood.positive = data.mood.positive;
-            this.mood.neutral = data.mood.neutral;
-            this.mood.negative = data.mood.negative;
-            this.updateMoodIcons();
-            this.setLastMoodUpdateTime();
+            // only update, if it is the correct lecture
+            if ( data.lectureID == this.lecture.lectureID ) {
+
+                this.mood = new Mood();
+                this.mood.lectureID = data.lectureID;
+                this.mood.positive = data.mood.positive;
+                this.mood.neutral = data.mood.neutral;
+                this.mood.negative = data.mood.negative;
+                this.updateMoodIcons();
+                this.setLastMoodUpdateTime();
+            }
         });
     }
 
