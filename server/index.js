@@ -38,5 +38,3 @@ http.listen(socketport, function() {
 
 
 logger.info("Server started. Listen on port " + appport)
-
-logger.warn("Still in dev mode!");

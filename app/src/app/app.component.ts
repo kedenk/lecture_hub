@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import {UserService} from './services/user.service';
 import {UinotificationService, NotificationTypes, NotificationAlign, NotificationPosition} from './services/uinotification.service';
-import {FormGroup, FormControl} from '@angular/forms';
+import {FormGroup, FormControl, Validators} from '@angular/forms';
 
 
 @Component({
@@ -15,6 +15,10 @@ export class AppComponent implements OnInit {
     loginErrorMessage: string;
 
     loginForm: FormGroup;
+    username: FormControl;
+
+    minUsernameLength = 5;
+    maxUsernameLength = 12;
 
     constructor(
         public location: Location,
@@ -22,8 +26,14 @@ export class AppComponent implements OnInit {
         private notiService: UinotificationService) {}
 
     ngOnInit() {
+        this.username = new FormControl('', [
+            Validators.required,
+            Validators.minLength(this.minUsernameLength),
+            Validators.maxLength(this.maxUsernameLength)
+        ]);
+
         this.loginForm = new FormGroup({
-            username: new FormControl()
+            username: this.username
         });
     }
 
@@ -51,7 +61,7 @@ export class AppComponent implements OnInit {
             return;
         }
 
-        const username: string = this.loginForm.value.username.toString();
+        const username: string = this.username.value.toString();
 
         this.userService.login( username ).subscribe(
             data => {

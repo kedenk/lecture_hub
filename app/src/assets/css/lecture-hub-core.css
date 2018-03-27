@@ -2,6 +2,10 @@
     cursor: pointer;
 }
 
+.uniMainColor {
+    color: #004972 !important;
+}
+
 .rateDiv {
     top: 50%;
 }

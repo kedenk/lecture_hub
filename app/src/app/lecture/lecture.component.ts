@@ -29,8 +29,9 @@ export class LectureComponent implements OnInit, OnDestroy {
     moodLastUpdateMessage: string;
     moodErrorMessage: string;
     userLectureMood = -5;
+    showMoodHelp = false;
 
-    moodResizeMultiplicator = 2;
+    moodResizeMultiplicator = 4;
     /***
      * Icon size in percentage
      */
@@ -56,10 +57,8 @@ export class LectureComponent implements OnInit, OnDestroy {
 
         this.route.queryParams.subscribe(
             params => {
-                console.log(params);
                 this.lecture = new Lecture();
                 this.lecture = JSON.parse(params['lecture']);
-                console.log(this.lecture);
             }
         );
     }
@@ -147,10 +146,13 @@ export class LectureComponent implements OnInit, OnDestroy {
             },
             error => {
                 console.error(error);
-                this.uiNotiService.showNotification(NotificationPosition.top,
-                    NotificationAlign.center,
-                    NotificationTypes.danger,
-                    'Unable to fetch your mood.');
+
+                if ( error.status !== 404 ) {
+                    this.uiNotiService.showNotification(NotificationPosition.top,
+                        NotificationAlign.center,
+                        NotificationTypes.danger,
+                        'Unable to fetch your mood.');
+                }
             }
         );
     }
@@ -188,6 +190,7 @@ export class LectureComponent implements OnInit, OnDestroy {
                         'We can not fetch data from the server. Please check your network connection or server status.');
                 }
                 console.error(error);
+                this.setLastMoodUpdateTime();
                 this.moodIsLoading = false;
             }
         );
@@ -223,8 +226,6 @@ export class LectureComponent implements OnInit, OnDestroy {
             const b: Body3 = new Body3();
             b.studentID = parseInt(this.userService.getCurrentUser().studentID, 10);
             b.textContent = this.newQuestionContent;
-
-            console.log(b);
 
             this.questionService.addQuestion( this.lecture.lectureID, b).subscribe(
                 data => {

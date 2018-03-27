@@ -1,8 +1,8 @@
-import {Injectable, OnDestroy, OnInit} from '@angular/core';
+import {Injectable} from '@angular/core';
 import * as socketIO from 'socket.io-client';
 import {Observable} from 'rxjs/Observable';
-import {ChatMessageSend} from "../api/model/chatmessagesend";
-import {ChatMessageRec} from "../api/model/chatmessagerec";
+import {ChatMessageSend} from '../api/model/chatmessagesend';
+import {ChatMessageRec} from '../api/model/chatmessagerec';
 
 class RegisterMessage {
 
@@ -48,7 +48,6 @@ export class ChatService {
     public onMessage(): Observable<ChatMessageRec> {
         return new Observable<ChatMessageRec>(observer => {
             this.socket.on(this.onPropagateTopic, (data: ChatMessageRec) => {
-                console.log(data);
                 observer.next(data);
             });
         });

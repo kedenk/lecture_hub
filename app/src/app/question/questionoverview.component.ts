@@ -8,7 +8,6 @@ import {
 } from '../services/uinotification.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ServerNotificationService} from '../services/servernotification.service';
-import {trigger, state, style, animate, transition} from '@angular/animations';
 
 @Component({
     selector: 'app-questionoverview',

@@ -11,9 +11,11 @@
                 <div class="card">
                     <div class="header">
                         <h4 class="title">{{lecture.lectureName}}</h4>
-                        <p class="category">{{lecture.lectureDescription}}</p>
+                        <p class="category">Description</p>
                     </div>
-                    <div class="content"></div>
+                    <div class="content">
+                        {{lecture.lectureDescription}}
+                    </div>
                 </div>
             </div>
 
@@ -24,7 +26,11 @@
                 <div class="card">
                     <div class="header">
                         <h4 class="title">Course Mood</h4>
-                        <!-- <p class="category">The size of the icon shows the distribution of votes. Big icon, many votes. For a vote click on your opinion.</p> -->
+                        <p class="category" *ngIf="showMoodHelp">
+                            The size of the different icons shows the mood distribution in this course.
+                            Big icons visualize high amount of votes.
+                            Small icons a small amount.
+                        </p>
                     </div>
 
                     <div class="content">
@@ -64,6 +70,11 @@
                         <hr/>
                         <div class="stats">
                             <i [ngClass]="footerIconClass"></i> {{ moodLastUpdateMessage }}
+                            <div class="pull-right">
+                                <a (click)="showMoodHelp = !showMoodHelp" style="cursor: pointer">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                </a>
+                            </div>
                         </div>
 
                     </div>

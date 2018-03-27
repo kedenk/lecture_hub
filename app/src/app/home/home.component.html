@@ -1,4 +1,6 @@
-
+<!--
+    main page to show all lectures
+-->
 <div class="main-content">
     <div class="container-fluid">
 
@@ -14,6 +16,10 @@
                     </div>
                     <div class="content table-responsive">
                         <div *ngIf="lectures.length > 0" class="table-full-width">
+
+                            <!--
+                                Table with all lectures
+                            -->
                             <table class="table table-hover table-striped table-row-pointer">
                                 <thead>
                                     <tr>
@@ -39,11 +45,17 @@
                             </table>
                         </div>
 
+                        <!--
+                            Message, if no lectures were found
+                        -->
                         <div *ngIf="lectures.length == 0">
                             <h4>Sorry, we found no lectures!</h4>
                             <button type="button" class="btn btn-default btn-block" value="Refresh" (click)="refreshLectures()">Refresh</button>
                         </div>
 
+                        <!--
+                            Last refresh of the table and button for refresh
+                        -->
                         <div class="footer">
                             <hr>
                             <div *ngIf="lastUpdate" class="stats">

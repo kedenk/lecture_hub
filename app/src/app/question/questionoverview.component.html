@@ -1,6 +1,18 @@
 
 <ngx-loading [show]="isQuestionLoading"></ngx-loading>
 
+<!--
+    Div is shown, if no questions asked
+-->
+<div class="row text-center" *ngIf="questions && questions.length === 0">
+    <h4>Be the first to ask a Question!</h4>
+    <h6>Just use the 'Ask Question' button above.</h6>
+    <br/>
+</div>
+
+<!--
+    Visualize all questions
+-->
 <div class="row" *ngFor="let question of questions">
 
     <app-questionview [setQuestion]="question" [onlyPreview]="true"></app-questionview>

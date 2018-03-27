@@ -16,17 +16,46 @@
 
                         <div class="card col-md-4 col-md-offset-4 text-center">
                             <div class="header">
-                                <h4 class="title">Login</h4>
+                                <a href="http://www.uni-saarland.de" target="_blank">
+                                    <img src="../assets/img/UdS-Logo.jpg" class="img-responsive"/>
+                                </a>
+                                <h4 class="title uniMainColor"><strong>Lecture HUB</strong></h4>
+                                <br/>
+                                <h5 class="title">Login</h5>
                             </div>
 
                             <div class="content ">
 
+                                <!--
+                                    Login form if no user is logged
+                                -->
                                 <form class="form-inline " [formGroup]="loginForm" (ngSubmit)="loginUser()" novalidate>
 
                                     <br/>
                                     <div class="form-group">
-                                        <input type="text" class="form-control" formControlName="username" autocomplete="off" placeholder="Username" required />
-                                        <button type="submit" class="btn btn-primary"><strong>Login</strong></button>
+                                        <label>Type here your desired <strong>username</strong></label>
+                                        <br/><br/>
+                                        <input type="text"
+                                               class="form-control"
+                                               formControlName="username"
+                                               autocomplete="off"
+                                               minlength="minUsernameLength"
+                                               maxlength="maxUsernameLength"
+                                               placeholder="Username"
+                                               title="Your username. A username with a length between 5 and 12 character."
+                                               required />
+                                        <button type="submit"
+                                                class="btn btn-primary"
+                                                title="'Login' with the selected username"
+                                                [disabled]="!this.loginForm.valid"
+                                                ><strong>Login</strong></button>
+
+                                        <br/>
+                                        <small *ngIf="username.dirty && username.errors?.minlength">
+                                            Username should have a length of {{minUsernameLength}}.
+                                            ({{minUsernameLength - username.value.length}} character left)
+                                        </small>
+                                        <small *ngIf="username.errors?.maxlength">Max username length is {{maxUsernameLength}}.</small>
 
                                         <br/>
                                         <br/>
@@ -43,6 +72,9 @@
             </div>
         </div>
 
+        <!--
+            If user is logged router-outlet will be used
+        -->
         <div *ngIf="isLoggedIn()">
 
             <router-outlet></router-outlet>

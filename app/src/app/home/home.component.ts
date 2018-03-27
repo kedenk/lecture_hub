@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
         this.lecturesLoading = true;
         this.lectureService.getLectures().subscribe(
             data => {
-                console.log(data);
+
                 this.lectures = data;
                 this.lecturesLoading = false;
                 this.lastUpdate = new Date();

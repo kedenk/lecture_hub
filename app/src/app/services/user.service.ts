@@ -32,15 +32,11 @@ export class UserService {
     }
 
     public isLoggedIn(): boolean {
-        if( this.getStudentCookie() !== null ) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.getStudentCookie() !== null;
     }
 
     public logout(): void {
-        console.log('logout');
+
         this.cookieService.delete(this.cookieStudentId);
         this.cookieService.delete(this.cookieStudentName);
 
@@ -49,20 +45,18 @@ export class UserService {
 
     public login(username: string): Observable<Student> {
 
-        console.log('All cookies');
-        console.log(this.cookieService.getAll());
+console.log("login", username);
         let currentUser = this.checkUsername( username );
+        console.log("1");
         if ( currentUser === null ) {
-
-            console.log('user not in cookie');
-            console.log('create new');
-
-            let newStudent: Student = new Student();
+            console.log("2");
+            const newStudent: Student = new Student();
+            console.log("2");
             newStudent.username = username;
+            console.log("2");
             this.studentService.addStudent( newStudent ).subscribe(
                 data => {
-                    console.log( 'new user' );
-                    console.log( data );
+console.log(data);
                     currentUser = data;
                     this.setStudentCookie( currentUser );
 
@@ -75,14 +69,12 @@ export class UserService {
                     });
                 },
                 error => {
-                    console.error('Can\'t add student');
-                    new Error('No Server connection.');
+                    console.log(error);
+                    console.log("error");
                 }
             );
 
         } else {
-
-            console.log('user in cookies');
 
             // invoke userlogin event
             this.onUserLogin( currentUser );
@@ -96,16 +88,15 @@ export class UserService {
 
     private setStudentCookie( student: Student ): void {
 
-        console.log('Set cookie: ', student);
         this.cookieService.set( this.cookieStudentId, student.studentID, 2147483647);
         this.cookieService.set( this.cookieStudentName, student.username, 2147483647);
     }
 
     private getStudentCookie(): Student {
 
-        if( this.cookieService.check(this.cookieStudentId) && this.cookieService.check(this.cookieStudentName) ) {
+        if ( this.cookieService.check(this.cookieStudentId) && this.cookieService.check(this.cookieStudentName) ) {
 
-            let student: Student = new Student();
+            const student: Student = new Student();
             student.studentID = this.cookieService.get(this.cookieStudentId);
             student.username = this.cookieService.get(this.cookieStudentName);
 
@@ -117,8 +108,8 @@ export class UserService {
 
     private checkUsername( username: string ): Student {
 
-        let student: Student = this.getStudentCookie();
-        if( student !== null && student.username === username) {
+        const student: Student = this.getStudentCookie();
+        if ( student !== null && student.username === username) {
             return student;
         } else {
             return null;
