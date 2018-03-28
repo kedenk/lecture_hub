@@ -23,18 +23,33 @@ export class UserService {
         private studentService: StudentService
     ) {}
 
+    /***
+     * Returns the current user id
+     * @returns {string}
+     */
     public getCurrentUserId(): string {
         return this.getStudentCookie().studentID;
     }
 
+    /***
+     * Returns the current user
+     * @returns {Student}
+     */
     public getCurrentUser(): Student {
         return this.getStudentCookie();
     }
 
+    /***
+     * Returns true, if user is logged in. Otherwise false
+     * @returns {boolean}
+     */
     public isLoggedIn(): boolean {
         return this.getStudentCookie() !== null;
     }
 
+    /***
+     * Logout a user and delets the cookies
+     */
     public logout(): void {
 
         this.cookieService.delete(this.cookieStudentId);
@@ -43,30 +58,29 @@ export class UserService {
         this.onUserLogout();
     }
 
-    public login(username: string): Observable<Student> {
 
-console.log("login", username);
+    /***
+     * Login a user and creates the cookies
+     * @param {string} username
+     */
+    public login(username: string): void {
+
         let currentUser = this.checkUsername( username );
-        console.log("1");
+
         if ( currentUser === null ) {
-            console.log("2");
+
             const newStudent: Student = new Student();
-            console.log("2");
+
+            newStudent.studentID = undefined;
             newStudent.username = username;
-            console.log("2");
+
             this.studentService.addStudent( newStudent ).subscribe(
                 data => {
-console.log(data);
                     currentUser = data;
                     this.setStudentCookie( currentUser );
 
                     // invoke userlogin event
                     this.onUserLogin( currentUser );
-
-                    return new Observable<Student>((observer) => {
-                        observer.next(currentUser);
-                        observer.complete();
-                    });
                 },
                 error => {
                     console.log(error);
@@ -78,20 +92,23 @@ console.log(data);
 
             // invoke userlogin event
             this.onUserLogin( currentUser );
-
-            return new Observable<Student>((observer) => {
-                observer.next(currentUser);
-                observer.complete();
-            });
         }
     }
 
+    /***
+     * Sets the cookies for the current user
+     * @param {Student} student
+     */
     private setStudentCookie( student: Student ): void {
 
         this.cookieService.set( this.cookieStudentId, student.studentID, 2147483647);
         this.cookieService.set( this.cookieStudentName, student.username, 2147483647);
     }
 
+    /***
+     * Returns the cookies for the current user, if available. Otherwise null
+     * @returns {Student}
+     */
     private getStudentCookie(): Student {
 
         if ( this.cookieService.check(this.cookieStudentId) && this.cookieService.check(this.cookieStudentName) ) {
@@ -106,6 +123,11 @@ console.log(data);
         }
     }
 
+    /***
+     * Checks, if given username is in cookies
+     * @param {string} username
+     * @returns {Student}
+     */
     private checkUsername( username: string ): Student {
 
         const student: Student = this.getStudentCookie();

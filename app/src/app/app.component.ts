@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
 
     constructor(
         public location: Location,
-        private userService: UserService,
+        public userService: UserService,
         private notiService: UinotificationService) {}
 
     ngOnInit() {
@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
         }
     }
 
-    loginUser(): void {
+    onSubmit() {
 
         if ( !this.loginForm.valid ) {
 
@@ -61,8 +61,12 @@ export class AppComponent implements OnInit {
             return;
         }
 
+        console.log("GOOOO");
+
         const username: string = this.username.value.toString();
 
+        this.userService.login( username );//.subscribe( data => console.log(data) );
+        /*
         this.userService.login( username ).subscribe(
             data => {
 
@@ -77,7 +81,7 @@ export class AppComponent implements OnInit {
             error => {
                 this.notiService.showNotification(NotificationPosition.top, NotificationAlign.center, NotificationTypes.warning, error);
             }
-        );
+        );*/
     }
 
     isLoggedIn(): boolean {
